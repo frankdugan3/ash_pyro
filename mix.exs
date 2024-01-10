@@ -86,21 +86,10 @@ defmodule AshPyro.MixProject do
   defp groups_for_modules do
     [
       Core: [
-        AshPyro,
-        AshPyro.Components
-      ],
-      Overrides: [
-        AshPyro.Overrides,
-        ~r/\.Overrides\./
+        AshPyro
       ],
       "Ash Resource Extension": [
         ~r/AshPyro.Extensions.Resource/
-      ],
-      Components: [~r/\.Components\./],
-      "Component Tooling": [
-        AshPyro.Component,
-        AshPyro.LiveComponent,
-        AshPyro.LiveView
       ]
     ]
   end
@@ -121,19 +110,13 @@ defmodule AshPyro.MixProject do
       {:doctor, ">= 0.0.0", only: :dev, runtime: false},
       {:ex_check, "~> 0.15", [env: :prod, hex: "ex_check", only: :dev, runtime: false, repo: "hexpm"]},
       {:faker, "~> 0.17", only: [:test, :dev]},
-      {:floki, ">= 0.30.0", only: :test},
       {:mix_audit, ">= 0.0.0", only: :dev, runtime: false},
       {:styler, "~> 0.11", only: [:dev, :test], runtime: false},
       # Build tooling
       {:ex_doc, ">= 0.0.0", only: :dev, runtime: false},
       {:git_ops, "~> 2.6", only: :dev},
       # Core dependencies
-      {:pyro, github: "frankdugan3/pyro", branch: "main"},
-      # {:pyro, "~> 0.2.0"},
-      {:phoenix_live_view, "~> 0.20"},
-      {:phoenix, "~> 1.7"},
-      {:ash, "~> 2.4", optional: true},
-      {:gettext, "~> 0.24", optional: true}
+      {:ash, "~> 2.4", optional: true}
     ]
   end
 

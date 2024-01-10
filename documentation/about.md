@@ -1,43 +1,29 @@
 # About
 
-AshPyro is a component library for Phoenix.
+Pyro is a suite of libraries for building UI in Phoenix.
 
-It provides:
+[Pyro](https://hexdocs.pm/pyro)
 
-1. An [Ash extension](AshPyro.Extensions.Resource) providing a declarative UI DSL
-2. A [library of components](AshPyro.Components) that automatically render the UI DSL
+- [Component tooling](https://hexdocs.pm/pyro/Pyro.Component.html) for Phoenix LiveView
+- [Customizable](https://hexdocs.pm/pyro/Pyro.Overrides.html) override system (skins/themes)
 
-It leverages the related package [Pyro](https://hexdocs.pm/pyro), which provides:
+[PyroComponents](https://hexdocs.pm/pyro_components)
 
-1. [Component tooling](https://hexdocs.pm/pyro/Pyro.Component.html) for Phoenix LiveView
-2. A library of [pre-built components](https://hexdocs.pm/pyro/Pyro.Components.Core.html)
-3. A set of [default](https://hexdocs.pm/pyro/Pyro.Overrides.Default.html), [customizable](https://hexdocs.pm/pyro/Pyro.Overrides.html) skins
+- A library of [pre-built components](https://hexdocs.pm/pyro_components)
+- A set of [preset overrides](https://hexdocs.pm/pyro_components/PyroComponents.Overrides.BEM) to get started quickly while allowing deep customization
 
-To install, follow the [Get Started](get-started.html) guide.
+`AshPyro`
+
+- [Ash extensions](AshPyro.Extensions.Resource) providing a declarative UI DSL
+
+[AshPyroComponents](https://hexdocs.pm/ash_pyro_components)
+
+- A [library of components](https://hexdocs.pm/ash_pyro_components/AshPyroComponents.html) that automatically render AshPyro DSL with PyroComponents
+
+To install `Pyro` and write your own components, follow the [Get Started](get-started.html) guide. For the other features, please see the "Get Started" guide for the appropriate library instead.
 
 ## What "problem" is it solving?
 
-The default model of Phoenix is to generate, then customize. While this does provide great isolation, I have found it pretty tedious to repeatedly make very similar copy & paste boilerplate changes to the generated code _every_ time I create a new Phoenix app. Additionally, some things (like timezone localization and extended Ecto types) are quite complicated and it would be nice for them to be handled by a library that is updated with future improvements. Copy & pasting boilerplate will lead to maintenance burdens down the road.
+The default model of Phoenix is to generate, then customize. While this does provide great isolation, I have found it pretty tedious to repeatedly make very similar copy & paste boilerplate changes to the generated code every time I create a new Phoenix app. Additionally, some things (like timezone localization) are quite complicated and it would be nice for them to be handled by a library that is updated with future improvements. Copy & pasting boilerplate will lead to maintenance burdens down the road.
 
-The tricky part is handling all the bespoke features in each app while sharing as much as possible. The goal is to provide a wide array of helpers and components with sane defaults, while allowing _very_ granular overrides.
-
-[Ash Framework](https://hexdocs.pm/ash) provides an _excellent_ foundation for this on the backend. Its deep extensibility allows the DSL to be extended, and that's exactly where Pyro pours on the gas! By combining the flexible configuration of components with Ash's extensible DSL, Pyro & AshPyro can seamlessly add declarative UI config to Phoenix LiveView.
-
-## General Principles
-
-Pyro is under-developed. Not all components adhere to every principles, but eventually these principles should prevail.
-
-- Maximal flexibility
-  - Application defaults through presets & custom overrides
-  - Bespoke configuration (via DSL in resources)
-  - Components allow overriding defaults through props
-- Clean, standards-compliant HTML markup
-  - Favor semantic HTML elements
-  - Avoid excessive `div` tags
-  - Adhere to [accessibility guidelines](https://www.w3.org/WAI/ARIA/apg/)
-- Progressive enhancement
-  - No external JS dependencies
-  - No needless JS
-  - Sensibly enhance UX with JS
-- Responsive
-- Internationalization support via `gettext`
+The tricky part is handling all the bespoke features in each app while sharing as much as possible. The goal is to provide a wide array of tooling, helpers and components with sane defaults, while allowing very granular overrides and optional libraries. By separating each level of features, you can choose which parts of Pyro to leverage, and which to implement yourself.

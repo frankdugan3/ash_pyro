@@ -48,15 +48,9 @@ spark_locals_without_parens = [
 ]
 
 [
-  import_deps: [
-    :phoenix,
-    :pyro,
-    :ash
-  ],
+  import_deps: [:ash],
   locals_without_parens: spark_locals_without_parens,
-  export: [
-    locals_without_parens: spark_locals_without_parens
-  ],
-  plugins: [Spark.Formatter, Phoenix.LiveView.HTMLFormatter, Styler],
+  export: [locals_without_parens: spark_locals_without_parens],
+  plugins: [Spark.Formatter, Styler],
   inputs: ["*.{heex,ex,exs}", "{config,lib}/**/*.{heex,ex,exs}"]
 ]

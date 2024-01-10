@@ -6,31 +6,31 @@
 
 # AshPyro
 
-Declarative UI for Ash Framework.
+Pyro is a suite of libraries for building UI in Phoenix.
 
-**NOTICE:** This library is under heavy development. Expect frequent breaking
-changes until the first stable v1.0 release is out.
+[Pyro](https://hexdocs.pm/pyro)
 
-AshPyro's documentation is housed on [hexdocs](https://hexdocs.pm/ash_pyro), which includes detailed [installation instructions](https://hexdocs.pm/ash_pyro/get-started.html) and other guides.
+- [Component tooling](https://hexdocs.pm/pyro/Pyro.Component.html) for Phoenix LiveView
+- [Customizable](https://hexdocs.pm/pyro/Pyro.Overrides.html) override system (skins/themes)
+
+[PyroComponents](https://hexdocs.pm/pyro_components)
+
+- A library of [pre-built components](https://hexdocs.pm/pyro_components)
+- A set of [preset overrides](https://hexdocs.pm/pyro_components/PyroComponents.Overrides.BEM) to get started quickly while allowing deep customization
+
+[AshPyro](https://hexdocs.pm/ash_pyro)
+
+- [Ash extensions](https://hexdocs.pm/ash_pyro/AshPyro.Extensions.Resource.html) providing a declarative UI DSL
+
+[AshPyroComponents](https://hexdocs.pm/ash_pyro_components)
+
+- A [library of components](https://hexdocs.pm/ash_pyro_components/AshPyroComponents.html) that automatically render AshPyro DSL with PyroComponents
+
+For more details, check out the [About](https://hexdocs.pm/pyro/about.html) page
 
 ## Installation
 
-Installation is covered in the [Get Started](https://hexdocs.pm/ash_pyro/get-started.html) guide.
-
-## What is AshPyro?
-
-AshPyro provides:
-
-1. An [Ash extension](https://hexdocs.pm/ash_pyro/AshPyro.Extensions.Resource.html) providing a declarative UI DSL
-2. A [library of components](https://hexdocs.pm/ash_pyro/AshPyro.Components.html) that automatically render the UI DSL
-
-For more details, check out the [About](https://hexdocs.pm/ash_pyro/about.html) page.
-
-It leverages the related package [Pyro](https://hexdocs.pm/pyro), which provides:
-
-1. [Component tooling](https://hexdocs.pm/pyro/Pyro.Component.html) for Phoenix LiveView
-2. A library of [pre-built components](https://hexdocs.pm/pyro/Pyro.Components.Core.html)
-3. A set of [default](https://hexdocs.pm/pyro/Pyro.Overrides.Default.html), [customizable](https://hexdocs.pm/pyro/Pyro.Overrides.html) skins
+To install `AshPyro` and add declarative UI DSL to your Ash project, follow the [Get Started](https://hexdocs.pm/ash_pyro/get-started.html) guide. For the other features, please see the "Get Started" guide for the appropriate library instead.
 
 ## Development
 
