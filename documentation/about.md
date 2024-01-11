@@ -2,25 +2,31 @@
 
 Pyro is a suite of libraries for building UI in Phoenix.
 
-[Pyro](https://hexdocs.pm/pyro)
+- [Pyro](https://hexdocs.pm/pyro)
 
-- [Component tooling](https://hexdocs.pm/pyro/Pyro.Component.html) for Phoenix LiveView
-- [Customizable](https://hexdocs.pm/pyro/Pyro.Overrides.html) override system (skins/themes)
+  Component tooling for Phoenix.
 
-[PyroComponents](https://hexdocs.pm/pyro_components)
+  - Customizable "overrides" system for granularly customizable themes
+  - Extended component attributes, e.g. CSS merging
 
-- A library of [pre-built components](https://hexdocs.pm/pyro_components)
-- A set of [preset overrides](https://hexdocs.pm/pyro_components/PyroComponents.Overrides.BEM) to get started quickly while allowing deep customization
+- [PyroComponents](https://hexdocs.pm/pyro_components)
 
-`AshPyro`
+  Ready-made Phoenix components, built with pyro.
 
-- [Ash extensions](AshPyro.Extensions.Resource) providing a declarative UI DSL
+  - Heex component library
+  - Overrides presets to get started quickly while allowing deep customization
 
-[AshPyroComponents](https://hexdocs.pm/ash_pyro_components)
+- [AshPyro](https://hexdocs.pm/ash_pyro)
 
-- A [library of components](https://hexdocs.pm/ash_pyro_components/AshPyroComponents.html) that automatically render AshPyro DSL with PyroComponents
+  Declarative UI for Ash Framework.
 
-To install `Pyro` and write your own components, follow the [Get Started](get-started.html) guide. For the other features, please see the "Get Started" guide for the appropriate library instead.
+  - Ash extensions providing a declarative UI DSL
+
+- [AshPyroComponents](https://hexdocs.pm/ash_pyro_components)
+
+  Components that automatically render PyroComponents declaratively via AshPyro.
+
+To install `AshPyro` and add declarative UI DSL to your Ash project, follow the [Get Started](get-started.html) guide. For the other features, please see the "Get Started" guide for the appropriate library instead.
 
 ## What "problem" is it solving?
 
