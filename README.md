@@ -38,7 +38,7 @@ For more details on AshPyro, check out the [About](https://hexdocs.pm/ash_pyro/a
 
 ## Installation
 
-To install `AshPyro` and add declarative UI DSL to your Ash project, follow the [Get Started](https://hexdocs.pm/ash_pyro/get-started.html) guide. For the other features, please see the "Get Started" guide for the appropriate library instead.
+To install AshPyro and add declarative UI DSL to your Ash project, follow the [Get Started](https://hexdocs.pm/ash_pyro/get-started.html) guide. For the other features, please see the "Get Started" guide for the appropriate library instead.
 
 ## Development
 

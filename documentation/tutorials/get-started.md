@@ -1,6 +1,6 @@
 # Get Started
 
-This guide steps through the installation process for `AshPyro`.
+This guide steps through the installation process for AshPyro.
 
 ## Installation
 
@@ -8,7 +8,7 @@ The installation process is pretty straightforward.
 
 ### Steps
 
-These steps assume you are adding `AshPyro` to an existing Phoenix LiveView app, as generated from the most recent version of `phx.new`. It also assumes you understand how to install and use Ash, and does not cover it's installation or configuration.
+These steps assume you are adding AshPyro to an existing Phoenix LiveView app, as generated from the most recent version of `phx.new`. It also assumes you understand how to install and use Ash, and does not cover it's installation or configuration.
 
 1. Add the appropriate dependencies:
 
