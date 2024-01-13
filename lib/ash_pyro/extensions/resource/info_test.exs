@@ -16,6 +16,23 @@ defmodule AshPyro.Extensions.Resource.InfoTest do
     require Ash.Query
 
     pyro do
+      data_table do
+        live_view do
+          page "/users", :companies, AshPyro.Extentions.Resource.Info do
+            list "/", :index, :read
+          end
+        end
+
+        action_type [:read] do
+          exclude [:id, :name_email, :best_friend]
+          column :name
+          column :email
+          column :role
+          column :active
+          column :notes
+        end
+      end
+
       form do
         action_type [:create, :update] do
           class "max-w-md justify-self-center"

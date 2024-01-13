@@ -42,8 +42,8 @@ defmodule AshPyro.Extensions.Resource.Info do
 
   ## Examples
 
-      iex> page_for(AshPyro.Extensions.Resource.InfoTest.User, :list) |> Enum.map(& &1.name)
-      :list
+      iex> page_for(AshPyro.Extensions.Resource.InfoTest.User, :companies) |> Map.get(:name)
+      :companies
   """
   @spec page_for(Ash.Resource.t(), atom()) :: AshPyro.Extensions.Resource.LiveView.Page | nil
   def page_for(resource, page_name) do
@@ -67,8 +67,8 @@ defmodule AshPyro.Extensions.Resource.Info do
 
   ## Examples
 
-      iex> data_table_for(AshPyro.Extensions.Resource.InfoTest.User, :list) |> Enum.map(& &1.name)
-      [:list]
+      iex> data_table_for(AshPyro.Extensions.Resource.InfoTest.User, :list) |> Map.get(:name)
+      :list
   """
   @spec data_table_for(Ash.Resource.t(), atom()) ::
           [
