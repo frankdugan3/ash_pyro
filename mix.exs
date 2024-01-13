@@ -126,6 +126,14 @@ defmodule AshPyro.MixProject do
         "spark.formatter --extensions AshPyro.Extensions.Resource",
         "format"
       ],
+      # until we hit 1.0, we will ensure no major release!
+      release: [
+        "build",
+        "git_ops.release --no-major"
+      ],
+      publish: [
+        "hex.publish"
+      ],
       setup: [
         "deps.get",
         "compile",
