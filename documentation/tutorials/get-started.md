@@ -17,7 +17,7 @@ These steps assume you are adding AshPyro to an existing Phoenix LiveView app, a
    ```elixir
    def deps do
      [
-    {:ash_pyro, "~> 0.0.0"},
+    {:ash_pyro, "~> 0.0.1"},
     {:ash, "~> 2.4"},
      ]
    end
@@ -41,7 +41,7 @@ These steps assume you are adding AshPyro to an existing Phoenix LiveView app, a
    def deps do
      [
       {:pyro, "~> 0.3"},
-      {:ash_pyro, "~> 0.0.0"},
+      {:ash_pyro, "~> 0.0.1"},
       {:ash, "~> 2.4"},
 
       ### OPTIONAL DEPS BELOW ###
