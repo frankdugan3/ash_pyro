@@ -12,7 +12,7 @@ defmodule AshPyro.Extensions.Resource.DataTable.Column do
     class "whitespace-nowrap"
     render_cell fn assigns ->
       ~H"""
-      <Pyro.Components.Core.icon name="hero-rocket-launch" />
+      <PyroComponents.Core.icon name="hero-rocket-launch" />
       <%= Map.get(@row, @col[:name]) %>
       """
     end

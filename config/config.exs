@@ -8,7 +8,6 @@ config :spark, :formatter,
     section_order: [
       :resource,
       :pyro,
-      :postgres,
       :authentication,
       :pub_sub,
       :attributes,
