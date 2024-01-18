@@ -65,7 +65,6 @@ defmodule AshPyro.MixProject do
       groups_for_extras: groups_for_extras(),
       groups_for_modules: groups_for_modules(),
       groups_for_functions: [
-        Components: &(&1[:type] == :component),
         Macros: &(&1[:type] == :macro)
       ]
     ]
@@ -86,7 +85,8 @@ defmodule AshPyro.MixProject do
   defp groups_for_modules do
     [
       Core: [
-        AshPyro
+        AshPyro,
+        AshPyro.Helpers
       ],
       "Ash Resource Extension": [
         ~r/AshPyro.Extensions.Resource/
