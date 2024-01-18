@@ -5,16 +5,15 @@ See [Conventional Commits](Https://conventionalcommits.org) for commit guideline
 
 <!-- changelog -->
 
-## [v1.0.0](https://github.com/frankdugan3/ash_pyro/compare/v0.0.1...v1.0.0) (2024-01-18)
+## [v0.0.1](https://github.com/frankdugan3/ash_pyro/compare/v0.0.1...v0.0.1) (2024-01-18)
+
 ### Breaking Changes:
 
-* separation of concerns
-
-
+- separation of concerns
 
 ### Bug Fixes:
 
-* stray unquote
+- stray unquote
 
 ## [v0.0.1](https://github.com/frankdugan3/ash_pyro/compare/v0.0.0...v0.0.1) (2024-01-18)
 
