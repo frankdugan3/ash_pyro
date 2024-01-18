@@ -13,10 +13,14 @@ defmodule AshPyro.Component do
   Wraps `use Pyro.Component`, also importing this module's helpers.
   """
   defmacro __using__(opts \\ []) do
-    quote bind_quoted: [opts: opts] do
+    component = quote bind_quoted: [opts: opts] do
       use Pyro.Component, opts
+    end
 
+    imports = quote do
       import unquote(__MODULE__)
     end
+
+    [component, imports]
   end
 end
