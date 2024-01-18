@@ -15,7 +15,7 @@ These steps assume you understand how to install and use Ash, and does not cover
    ```elixir
    def deps do
      [
-    {:ash_pyro, "~> 0.0.1"},
+    {:ash_pyro, "~> 0.1.0"},
     {:ash, "~> 2.4"},
      ]
    end
