@@ -52,11 +52,5 @@ spark_locals_without_parens = [
   locals_without_parens: spark_locals_without_parens,
   export: [locals_without_parens: spark_locals_without_parens],
   plugins: [Spark.Formatter, Styler],
-  # HACK: Ignore files that need special module attribute ordering
-  inputs:
-    Enum.flat_map(
-      ["*.{heex,ex,exs}", "{config,lib}/**/*.{heex,ex,exs}"],
-      &Path.wildcard(&1, match_dot: true)
-    ) --
-      ["lib/ash_pyro/component.ex", "lib/ash_pyro/live_component.ex", "lib/ash_pyro/live_view.ex"]
+  inputs: ["*.{heex,ex,exs}", "{config,lib}/**/*.{heex,ex,exs}"]
 ]
