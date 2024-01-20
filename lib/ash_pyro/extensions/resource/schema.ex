@@ -21,6 +21,11 @@ defmodule AshPyro.Extensions.Resource.Schema do
     {:or, [type, {:one_of, [:inherit]}]}
   end
 
+  @doc "pagination types"
+  def pagination_schema_type do
+    {:one_of, [:keyset, :offset, :none]}
+  end
+
   @doc "acceptable formats for sorting options"
   def sort_schema_type do
     {:or,

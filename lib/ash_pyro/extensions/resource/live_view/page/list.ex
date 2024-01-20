@@ -6,7 +6,17 @@ defmodule AshPyro.Extensions.Resource.LiveView.Page.List do
   use AshPyro.Extensions.Resource.Schema
 
   @type t :: %__MODULE__{}
-  defstruct [:path, :live_action, :action, :display_as, :label, :description, :class]
+  defstruct [
+    :path,
+    :live_action,
+    :action,
+    :display_as,
+    :label,
+    :description,
+    :class,
+    :pagination,
+    :default_limit
+  ]
 
   @schema [
     path: [
@@ -44,6 +54,16 @@ defmodule AshPyro.Extensions.Resource.LiveView.Page.List do
       type: css_class_schema_type(),
       required: false,
       doc: "Customize action classes."
+    ],
+    pagination: [
+      type: pagination_schema_type(),
+      required: false,
+      doc: "The pagination type (defaults to `:offset` if available)."
+    ],
+    default_limit: [
+      type: :integer,
+      required: false,
+      doc: "The default pagination limit (defaults to the resource's `default_limit`, falling back to `max_page_size`)."
     ]
   ]
 

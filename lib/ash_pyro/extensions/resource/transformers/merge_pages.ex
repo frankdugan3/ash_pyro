@@ -173,8 +173,48 @@ defmodule AshPyro.Extensions.Resource.Transformers.MergePages do
   defp expand_live_action_defaults(%Page.Update{load_action: nil} = live_action, dsl) do
     case_result =
       case dsl |> filter_actions(&(&1.type == :read && &1.primary? == true)) |> List.first() do
-        nil -> live_action
-        %{name: name} -> %{live_action | load_action: name}
+        nil ->
+          raise DslError.exception(
+                  path: [:pyro, :live_view, :page, :update],
+                  message: """
+                  no primary read action; you must specify the load_action or add a primary read action
+                  """
+                )
+
+        %{name: name} ->
+          %{live_action | load_action: name}
+      end
+
+    expand_live_action_defaults(case_result, dsl)
+  end
+
+  defp expand_live_action_defaults(%Page.List{pagination: nil, action: action} = live_action, dsl) do
+    case_result =
+      case dsl |> filter_actions(&(&1.type == :read && &1.name == action)) |> List.first() do
+        %{pagination: %{offset?: true}} ->
+          %{live_action | pagination: :offset}
+
+        %{pagination: %{keyset?: true}} ->
+          %{live_action | pagination: :keyset}
+
+        _ ->
+          %{live_action | pagination: :none}
+      end
+
+    expand_live_action_defaults(case_result, dsl)
+  end
+
+  defp expand_live_action_defaults(%Page.List{default_limit: nil, action: action} = live_action, dsl) do
+    case_result =
+      case dsl |> filter_actions(&(&1.type == :read && &1.name == action)) |> List.first() do
+        %{pagination: %{default_limit: limit}} when is_integer(limit) ->
+          %{live_action | default_limit: limit}
+
+        %{pagination: %{max_page_size: limit}} when is_integer(limit) ->
+          %{live_action | default_limit: limit}
+
+        _ ->
+          %{live_action | default_limit: 250}
       end
 
     expand_live_action_defaults(case_result, dsl)
