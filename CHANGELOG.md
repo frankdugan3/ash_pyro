@@ -5,6 +5,17 @@ See [Conventional Commits](Https://conventionalcommits.org) for commit guideline
 
 <!-- changelog -->
 
+## [v0.2.0](https://github.com/frankdugan3/ash_pyro/compare/v0.1.0...v0.2.0) (2024-01-22)
+
+
+
+
+### Features:
+
+* add pagination countability
+
+* add pagination to page list DSL
+
 ## [v0.1.0](https://github.com/frankdugan3/ash_pyro/compare/v0.0.1...v0.1.0) (2024-01-18)
 ### Breaking Changes:
 
