@@ -204,6 +204,20 @@ defmodule AshPyro.Extensions.Resource.Transformers.MergePages do
     expand_live_action_defaults(case_result, dsl)
   end
 
+  defp expand_live_action_defaults(%Page.List{count?: nil, action: action} = live_action, dsl) do
+    case_result =
+      case dsl |> filter_actions(&(&1.type == :read && &1.name == action)) |> List.first() do
+        %{pagination: %{offset?: true, countable: true}} ->
+          %{live_action | count?: true}
+
+        _ ->
+          %{live_action | count?: false}
+      end
+
+    expand_live_action_defaults(case_result, dsl)
+  end
+
+  # TODO: Check
   defp expand_live_action_defaults(%Page.List{default_limit: nil, action: action} = live_action, dsl) do
     case_result =
       case dsl |> filter_actions(&(&1.type == :read && &1.name == action)) |> List.first() do

@@ -15,7 +15,8 @@ defmodule AshPyro.Extensions.Resource.LiveView.Page.List do
     :description,
     :class,
     :pagination,
-    :default_limit
+    :default_limit,
+    :count?
   ]
 
   @schema [
@@ -64,6 +65,11 @@ defmodule AshPyro.Extensions.Resource.LiveView.Page.List do
       type: :integer,
       required: false,
       doc: "The default pagination limit (defaults to the resource's `default_limit`, falling back to `max_page_size`)."
+    ],
+    count?: [
+      type: :boolean,
+      required: false,
+      doc: "Whether to count the query (defaults to true for `:offset` pagination if available)."
     ]
   ]
 
