@@ -11,12 +11,7 @@ defmodule AshPyro.Extensions.Resource.Info do
       iex> form_for(AshPyro.Extensions.Resource.InfoTest.User, :create) |> Map.get(:fields) |> Enum.map(& &1.name)
       [:primary, :authorization, :friendships, :notes]
   """
-  @spec form_for(Ash.Resource.t(), atom()) ::
-          [
-            AshPyro.Extensions.Resource.Form.Field.t()
-            | AshPyro.Extensions.Resource.Form.FieldGroup.t()
-          ]
-          | nil
+  @spec form_for(Ash.Resource.t(), atom()) :: AshPyro.Extensions.Resource.Form.Action | nil
   def form_for(resource, action_name) do
     resource
     |> Spark.Dsl.Extension.get_entities([:pyro, :form])
@@ -25,16 +20,11 @@ defmodule AshPyro.Extensions.Resource.Info do
     end)
   end
 
-  @doc """
-  Same as `&form_for\2`, but raises if not found.
-  """
-  @spec form_for!(Ash.Resource.t(), atom()) ::
-          [
-            AshPyro.Extensions.Resource.Form.Field.t()
-            | AshPyro.Extensions.Resource.Form.FieldGroup.t()
-          ]
-  def form_for!(resource, action_name) do
-    form_for(resource, action_name) || raise "unable to find form"
+  def form_field(resource, action, field) do
+    case form_for(resource, action) do
+      nil -> nil
+      %{fields: fields} -> Enum.find(fields, &(&1.name == field))
+    end
   end
 
   @doc """
@@ -52,14 +42,6 @@ defmodule AshPyro.Extensions.Resource.Info do
     |> Enum.find(fn page ->
       page.name == page_name
     end)
-  end
-
-  @doc """
-  Same as `&page_for\2`, but raises if not found.
-  """
-  @spec page_for!(Ash.Resource.t(), atom()) :: AshPyro.Extensions.Resource.LiveView.Page
-  def page_for!(resource, page_name) do
-    page_for(resource, page_name) || raise "unable to find page"
   end
 
   @doc """
@@ -84,13 +66,33 @@ defmodule AshPyro.Extensions.Resource.Info do
   end
 
   @doc """
-  Same as `&data_table_for\2`, but raises if not found.
+  Get a resource via a path from starting resource.
   """
-  @spec data_table_for!(Ash.Resource.t(), atom()) ::
-          [
-            AshPyro.Extensions.Resource.DataTable
-          ]
-  def data_table_for!(resource, action_name) do
-    data_table_for(resource, action_name) || raise "unable to find data table"
+  @spec resource_by_path(Ash.Resource.t(), [atom() | binary()]) :: Ash.Resource.t()
+  def resource_by_path(resource, []), do: resource
+
+  def resource_by_path(resource, [relationship | rest]) do
+    case Ash.Resource.Info.field(resource, relationship) do
+      %Ash.Resource.Aggregate{} ->
+        resource
+
+      %Ash.Resource.Calculation{} ->
+        resource
+
+      %Ash.Resource.Attribute{} ->
+        resource
+
+      %Ash.Resource.Relationships.BelongsTo{destination: destination} ->
+        resource_by_path(destination, rest)
+
+      %Ash.Resource.Relationships.HasOne{destination: destination} ->
+        resource_by_path(destination, rest)
+
+      %Ash.Resource.Relationships.HasMany{destination: destination} ->
+        resource_by_path(destination, rest)
+
+      %Ash.Resource.Relationships.ManyToMany{destination: destination} ->
+        resource_by_path(destination, rest)
+    end
   end
 end
