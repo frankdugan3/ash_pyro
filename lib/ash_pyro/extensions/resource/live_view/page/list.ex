@@ -16,7 +16,8 @@ defmodule AshPyro.Extensions.Resource.LiveView.Page.List do
     :class,
     :pagination,
     :default_limit,
-    :count?
+    :count?,
+    :parent_action
   ]
 
   @schema [

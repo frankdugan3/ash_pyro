@@ -15,7 +15,8 @@ defmodule AshPyro.Extensions.Resource.LiveView.Page.Update do
     :label,
     :description,
     :class,
-    :identity
+    :identity,
+    :parent_action
   ]
 
   @schema [

@@ -14,7 +14,8 @@ defmodule AshPyro.Extensions.Resource.LiveView.Page.Create do
     :label,
     :description,
     :class,
-    :identity
+    :identity,
+    :parent_action
   ]
 
   @schema [

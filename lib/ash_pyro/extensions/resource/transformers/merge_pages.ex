@@ -44,15 +44,6 @@ defmodule AshPyro.Extensions.Resource.Transformers.MergePages do
 
     live_actions =
       Enum.reduce(live_action_types.list, [], fn list, acc ->
-        acc =
-          Enum.reduce(live_action_types.create, acc, fn create, acc ->
-            path =
-              build_path([page.path, list.path, create.path])
-
-            live_action = String.to_atom("#{list.live_action}_#{create.live_action}")
-            [%{create | path: path, live_action: live_action} | acc]
-          end)
-
         child_actions =
           Enum.concat([
             live_action_types.show,
@@ -65,10 +56,30 @@ defmodule AshPyro.Extensions.Resource.Transformers.MergePages do
               build_path([page.path, list.path, identity_to_path(action.identity), action.path])
 
             live_action = String.to_atom("#{list.live_action}_#{action.live_action}")
-            [%{action | path: path, live_action: live_action} | acc]
+
+            [
+              %{action | path: path, live_action: live_action, parent_action: list.live_action}
+              | acc
+            ]
           end)
 
-        [%{list | path: build_path([page.path, list.path])} | acc]
+        acc =
+          Enum.reduce(live_action_types.create, acc, fn create, acc ->
+            path =
+              build_path([page.path, list.path, create.path])
+
+            live_action = String.to_atom("#{list.live_action}_#{create.live_action}")
+
+            [
+              %{create | path: path, live_action: live_action, parent_action: list.live_action}
+              | acc
+            ]
+          end)
+
+        [
+          %{list | path: build_path([page.path, list.path]), parent_action: list.live_action}
+          | acc
+        ]
       end)
 
     page = %{page | live_actions: live_actions}
@@ -93,6 +104,19 @@ defmodule AshPyro.Extensions.Resource.Transformers.MergePages do
         show_identity = identity_to_path(show.identity)
 
         acc =
+          Enum.reduce(live_action_types.create, acc, fn action, acc ->
+            path =
+              build_path([page.path, show_identity, show.path, action.path])
+
+            live_action = String.to_atom("#{show.live_action}_#{action.live_action}")
+
+            [
+              %{action | path: path, live_action: live_action, parent_action: show.live_action}
+              | acc
+            ]
+          end)
+
+        acc =
           Enum.reduce(live_action_types.update, acc, fn update, acc ->
             path =
               build_path([
@@ -104,20 +128,19 @@ defmodule AshPyro.Extensions.Resource.Transformers.MergePages do
               ])
 
             live_action = String.to_atom("#{show.live_action}_#{update.live_action}")
-            [%{update | path: path, live_action: live_action} | acc]
-          end)
 
-        acc =
-          Enum.reduce(live_action_types.create, acc, fn action, acc ->
-            path =
-              build_path([page.path, show_identity, show.path, action.path])
-
-            live_action = String.to_atom("#{show.live_action}_#{action.live_action}")
-            [%{action | path: path, live_action: live_action} | acc]
+            [
+              %{update | path: path, live_action: live_action, parent_action: show.live_action}
+              | acc
+            ]
           end)
 
         [
-          %{show | path: build_path([page.path, show_identity, show.path])}
+          %{
+            show
+            | path: build_path([page.path, show_identity, show.path]),
+              parent_action: show.live_action
+          }
           | acc
         ]
       end)
