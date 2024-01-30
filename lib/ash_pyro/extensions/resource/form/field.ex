@@ -98,12 +98,12 @@ defmodule AshPyro.Extensions.Resource.Form.Field do
     ],
     autocomplete_search_action: [
       type: :atom,
-      default: :autocomplete,
+      default: :read,
       doc: "Set the autocomplete search action name."
     ],
     autocomplete_search_arg: [
       type: :atom,
-      default: :search,
+      default: nil,
       doc: "Set the autocomplete search argument key."
     ],
     autocomplete_option_label_key: [
