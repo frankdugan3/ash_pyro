@@ -1,12 +1,13 @@
 defmodule AshPyro.Extensions.Resource.LiveView.Page.List do
   @moduledoc """
-  A LiveView page.
+  A list type live_action for a LiveView page.
   """
 
   use AshPyro.Extensions.Resource.Schema
 
   @type t :: %__MODULE__{}
   defstruct [
+    # schema fields
     :path,
     :live_action,
     :action,
@@ -17,13 +18,20 @@ defmodule AshPyro.Extensions.Resource.LiveView.Page.List do
     :pagination,
     :default_limit,
     :count?,
-    :parent_action
+    :icon_name,
+    # meta fields
+    parent_action: nil,
+    create_actions: [],
+    list_actions: [],
+    show_actions: [],
+    update_actions: [],
+    destroy_actions: []
   ]
 
   @schema [
     path: [
       required: true,
-      type: :string,
+      type: {:wrap_list, :string},
       doc: "The route path for this action."
     ],
     live_action: [
@@ -71,6 +79,12 @@ defmodule AshPyro.Extensions.Resource.LiveView.Page.List do
       type: :boolean,
       required: false,
       doc: "Whether to count the query (defaults to true for `:offset` pagination if available)."
+    ],
+    icon_name: [
+      type: :string,
+      required: false,
+      default: "hero-list-bullet-solid",
+      doc: "The icon to use for links/buttons."
     ]
   ]
 

@@ -82,6 +82,7 @@ defmodule AshPyro.Extensions.Resource.Transformers.MergePages do
         ]
       end)
 
+    # TODO: Sort live_actions, ensuring params go last in groups, and groups in descending length.
     page = %{page | live_actions: live_actions}
     dsl = Transformer.replace_entity(dsl, [:pyro, :live_view], page)
 
@@ -183,8 +184,6 @@ defmodule AshPyro.Extensions.Resource.Transformers.MergePages do
     |> List.flatten()
     |> Enum.flat_map(&String.split(&1, "/", trim: true))
     |> Enum.reject(&(&1 == "/"))
-    |> Enum.join("/")
-    |> then(&("/" <> &1))
   end
 
   defp identity_to_path(identity) do

@@ -1,12 +1,13 @@
 defmodule AshPyro.Extensions.Resource.LiveView.Page.Update do
   @moduledoc """
-  A LiveView page.
+  An update type live_action for a LiveView page.
   """
 
   use AshPyro.Extensions.Resource.Schema
 
   @type t :: %__MODULE__{}
   defstruct [
+    # schema fields
     :path,
     :live_action,
     :action,
@@ -16,12 +17,19 @@ defmodule AshPyro.Extensions.Resource.LiveView.Page.Update do
     :description,
     :class,
     :identity,
-    :parent_action
+    :icon_name,
+    # meta fields
+    parent_action: nil,
+    create_actions: [],
+    list_actions: [],
+    show_actions: [],
+    update_actions: [],
+    destroy_actions: []
   ]
 
   @schema [
     path: [
-      type: :string,
+      type: {:wrap_list, :string},
       required: true,
       doc: "The route path for this action."
     ],
@@ -66,6 +74,12 @@ defmodule AshPyro.Extensions.Resource.LiveView.Page.Update do
       type: {:wrap_list, :atom},
       default: :id,
       doc: "The identity used to load the record."
+    ],
+    icon_name: [
+      type: :string,
+      required: false,
+      default: "hero-pencil-square-solid",
+      doc: "The icon to use for links/buttons."
     ]
   ]
 

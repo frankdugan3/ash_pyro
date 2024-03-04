@@ -26,6 +26,7 @@ spark_locals_without_parens = [
   field: 2,
   field_group: 1,
   field_group: 2,
+  icon_name: 1,
   identity: 1,
   input_class: 1,
   keep_live?: 1,

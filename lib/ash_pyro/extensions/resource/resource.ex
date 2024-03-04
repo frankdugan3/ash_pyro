@@ -175,7 +175,8 @@ transformers = [
 
 verifiers = [
   AshPyro.Extensions.Resource.Verifiers.DataTableActions,
-  AshPyro.Extensions.Resource.Verifiers.FormActions
+  AshPyro.Extensions.Resource.Verifiers.FormActions,
+  AshPyro.Extensions.Resource.Verifiers.Pages
 ]
 
 sections = [pyro]

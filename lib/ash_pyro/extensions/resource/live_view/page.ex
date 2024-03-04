@@ -57,7 +57,7 @@ defmodule AshPyro.Extensions.Resource.LiveView.Page do
     ],
     path: [
       required: true,
-      type: :string,
+      type: {:wrap_list, :string},
       doc: "The route path for this page."
     ],
     route_helper: [

@@ -29,6 +29,8 @@ defmodule AshPyro.Extensions.Resource.Router do
 
     for %{path: path, live_action: live_action} <-
           pyro_page.live_actions do
+      path = Enum.join(["" | path], "/")
+
       quote do
         live(
           unquote(path),
