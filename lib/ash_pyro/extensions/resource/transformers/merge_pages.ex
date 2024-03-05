@@ -5,6 +5,8 @@ defmodule AshPyro.Extensions.Resource.Transformers.MergePages do
 
   alias AshPyro.Extensions.Resource.LiveView.Page
 
+  require Logger
+
   @dependant_transformers Ash.Resource.Dsl.transformers() ++
                             [
                               AshPyro.Extensions.Resource.Transformers.MergeFormActions,
@@ -43,7 +45,8 @@ defmodule AshPyro.Extensions.Resource.Transformers.MergePages do
       |> partition_live_actions()
 
     live_actions =
-      Enum.reduce(live_action_types.list, [], fn list, acc ->
+      live_action_types.list
+      |> Enum.reduce([], fn list, acc ->
         child_actions =
           Enum.concat([
             live_action_types.show,
@@ -81,8 +84,8 @@ defmodule AshPyro.Extensions.Resource.Transformers.MergePages do
           | acc
         ]
       end)
+      |> sort_live_actions()
 
-    # TODO: Sort live_actions, ensuring params go last in groups, and groups in descending length.
     page = %{page | live_actions: live_actions}
     dsl = Transformer.replace_entity(dsl, [:pyro, :live_view], page)
 
@@ -101,7 +104,8 @@ defmodule AshPyro.Extensions.Resource.Transformers.MergePages do
       end)
 
     live_actions =
-      Enum.reduce(live_action_types.show, list_actions, fn show, acc ->
+      live_action_types.show
+      |> Enum.reduce(list_actions, fn show, acc ->
         show_identity = identity_to_path(show.identity)
 
         acc =
@@ -145,6 +149,7 @@ defmodule AshPyro.Extensions.Resource.Transformers.MergePages do
           | acc
         ]
       end)
+      |> sort_live_actions()
 
     page = %{page | live_actions: live_actions}
     dsl = Transformer.replace_entity(dsl, [:pyro, :live_view], page)
@@ -171,6 +176,7 @@ defmodule AshPyro.Extensions.Resource.Transformers.MergePages do
           identity_path = identity_to_path(update.identity)
           %{update | path: build_path([page.path, identity_path, update.path])}
       end)
+      |> sort_live_actions()
 
     page = %{page | live_actions: live_actions}
     dsl = Transformer.replace_entity(dsl, [:pyro, :live_view], page)
@@ -296,5 +302,44 @@ defmodule AshPyro.Extensions.Resource.Transformers.MergePages do
       %Page.Update{} = action, acc ->
         %{acc | update: [action | acc.update]}
     end)
+  end
+
+  defp sort_live_actions(routes), do: Enum.sort(routes, &route_sorter/2)
+
+  defp route_sorter(%{path: left}, %{path: right}) do
+    compare_paths(left, right)
+  end
+
+  defp compare_paths(left, right) do
+    if left == right do
+      Logger.warning("duplicate paths: #{inspect(left)}")
+    end
+
+    case {left, right} do
+      # dynamic segments can be compared
+      {[":" <> left_segment | left_rest], [":" <> right_segment | right_rest]} ->
+        compare_paths([left_segment | left_rest], [right_segment | right_rest])
+
+      # shorter paths should go last
+      {[], _} ->
+        false
+
+      {_, []} ->
+        true
+
+      # dynamic segments must come after statuc segments
+      {[":" <> _ | _], _} ->
+        false
+
+      {_, [":" <> _ | _]} ->
+        true
+
+      # identical segments must be compared on sub-path
+      {[left_segment | left], [right_segment | right]} when left_segment == right_segment ->
+        compare_paths(left, right)
+
+      {[left_segment | _], [right_segment | _]} ->
+        left_segment >= right_segment
+    end
   end
 end
