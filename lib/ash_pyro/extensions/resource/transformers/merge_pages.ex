@@ -310,36 +310,29 @@ defmodule AshPyro.Extensions.Resource.Transformers.MergePages do
     compare_paths(left, right)
   end
 
-  defp compare_paths(left, right) do
-    if left == right do
-      Logger.warning("duplicate paths: #{inspect(left)}")
-    end
-
-    case {left, right} do
-      # dynamic segments can be compared
-      {[":" <> left_segment | left_rest], [":" <> right_segment | right_rest]} ->
-        compare_paths([left_segment | left_rest], [right_segment | right_rest])
-
-      # shorter paths should go last
-      {[], _} ->
-        false
-
-      {_, []} ->
-        true
-
-      # dynamic segments must come after statuc segments
-      {[":" <> _ | _], _} ->
-        false
-
-      {_, [":" <> _ | _]} ->
-        true
-
-      # identical segments must be compared on sub-path
-      {[left_segment | left], [right_segment | right]} when left_segment == right_segment ->
-        compare_paths(left, right)
-
-      {[left_segment | _], [right_segment | _]} ->
-        left_segment >= right_segment
-    end
+  defp compare_paths(left, right) when left == right do
+    Logger.warning("duplicate paths: #{inspect(left)}")
+    true
   end
+
+  # dynamic segment pairs are comparable
+  defp compare_paths([":" <> left_segment | left], [":" <> right_segment | right]),
+    do: compare_paths([left_segment | left], [right_segment | right])
+
+  # shorter paths must go last
+  defp compare_paths([], _), do: false
+
+  defp compare_paths(_, []), do: true
+
+  # dynamic segments must come after static segments
+  defp compare_paths([":" <> _ | _], _), do: false
+
+  defp compare_paths(_, [":" <> _ | _]), do: true
+
+  # identical segments must be compared on sub-path
+  defp compare_paths([left_segment | left], [right_segment | right]) when left_segment == right_segment,
+    do: compare_paths(left, right)
+
+  # normal comparison of segment
+  defp compare_paths([left_segment | _], [right_segment | _]), do: left_segment >= right_segment
 end
