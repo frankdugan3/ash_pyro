@@ -16,7 +16,7 @@ defmodule AshPyro.Extensions.Resource.Router do
     scope "/", ExampleWeb do
       pipe_through :browser
 
-      live_routes_for CompanyLive, :companies
+      live_routes_for CompanyLive, Example.Company, :companies
       end
     end
   end
