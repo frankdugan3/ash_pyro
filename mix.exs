@@ -116,7 +116,7 @@ defmodule AshPyro.MixProject do
       {:ex_doc, ">= 0.0.0", only: :dev, runtime: false},
       {:git_ops, "~> 2.6", only: :dev},
       # Core dependencies
-      {:ash, "~> 3.0.0-rc.8"}
+      {:ash, "~> 3.0.0-rc.9"}
     ]
   end
 
