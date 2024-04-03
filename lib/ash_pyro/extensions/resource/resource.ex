@@ -143,7 +143,7 @@ live_view_page = %Spark.Dsl.Entity{
   name: :page,
   schema: AshPyro.Extensions.Resource.LiveView.Page.schema(),
   target: AshPyro.Extensions.Resource.LiveView.Page,
-  args: [:path, :name, :api],
+  args: [:path, :name, :domain],
   identifier: :name,
   entities: [
     live_actions: [live_view_list, live_view_show, live_view_create, live_view_update]

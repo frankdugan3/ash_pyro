@@ -6,7 +6,7 @@ defmodule AshPyro.Extensions.Resource.LiveView.Page do
 
   @type t :: %__MODULE__{
           __identifier__: any(),
-          api: atom(),
+          domain: atom(),
           class: Schema.css_class(),
           keep_live?: boolean(),
           live_actions:
@@ -23,7 +23,7 @@ defmodule AshPyro.Extensions.Resource.LiveView.Page do
         }
   defstruct [
     :__identifier__,
-    :api,
+    :domain,
     :class,
     :keep_live?,
     :live_actions,
@@ -34,10 +34,10 @@ defmodule AshPyro.Extensions.Resource.LiveView.Page do
   ]
 
   @schema [
-    api: [
+    domain: [
       type: :atom,
       required: true,
-      doc: "The API for routes on this page (can also specify per-route/per-action)."
+      doc: "The Ash resource domain for routes on this page (can also specify per-route/per-action)."
     ],
     class: [
       type: css_class_schema_type(),
