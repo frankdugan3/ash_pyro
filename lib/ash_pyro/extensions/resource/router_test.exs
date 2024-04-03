@@ -13,7 +13,8 @@ defmodule AshPyro.Extensions.Resource.RouterTest do
     use Ash.Resource,
       data_layer: Ash.DataLayer.Ets,
       extensions: [AshPyro.Extensions.Resource],
-      notifiers: [Ash.Notifier.PubSub]
+      notifiers: [Ash.Notifier.PubSub],
+      domain: AshPyro.Extensions.Resource.RouterTest.Domain
 
     require Ash.Query
 
@@ -96,7 +97,7 @@ defmodule AshPyro.Extensions.Resource.RouterTest do
 
     attributes do
       uuid_primary_key :id
-      attribute :name, :string, allow_nil?: false
+      attribute :name, :string, allow_nil?: false, public?: true
 
       attribute :email, :string,
         sensitive?: true,
@@ -104,20 +105,24 @@ defmodule AshPyro.Extensions.Resource.RouterTest do
         constraints: [
           max_length: 160,
           match: ~r/^[\w.!#$%&’*+\-\/=?\^`{|}~]+@[A-Z0-9-]+(\.[A-Z0-9-]+)*$/i
-        ]
+        ],
+        public?: true
 
-      attribute :active, :boolean, allow_nil?: false, default: true
+      attribute :active, :boolean, allow_nil?: false, default: true, public?: true
 
       attribute :role, :atom,
         allow_nil?: false,
         constraints: [one_of: ~w[reader author editor admin]a],
-        default: :reader
+        default: :reader,
+        public?: true
 
-      attribute :notes, :string, description: "Note anything unusual about yourself"
+      attribute :notes, :string,
+        description: "Note anything unusual about yourself",
+        public?: true
     end
 
     relationships do
-      belongs_to :best_friend, __MODULE__, api: AshPyro.Extensions.Resource.RouterTest.Api
+      belongs_to :best_friend, __MODULE__
     end
 
     calculations do
@@ -127,6 +132,7 @@ defmodule AshPyro.Extensions.Resource.RouterTest do
     end
 
     actions do
+      default_accept :*
       defaults [:read, :destroy]
 
       read :list do
@@ -171,8 +177,6 @@ defmodule AshPyro.Extensions.Resource.RouterTest do
     end
 
     code_interface do
-      define_for AshPyro.Extensions.Resource.RouterTest.Api
-
       define :autocomplete, action: :autocomplete, args: [:search]
       define :list, action: :list
       define :by_id, action: :read, get_by: [:id]
@@ -181,21 +185,12 @@ defmodule AshPyro.Extensions.Resource.RouterTest do
     end
   end
 
-  defmodule Registry do
+  defmodule Domain do
     @moduledoc false
-    use Ash.Registry
-
-    entries do
-      entry User
-    end
-  end
-
-  defmodule Api do
-    @moduledoc false
-    use Ash.Api
+    use Ash.Domain
 
     resources do
-      registry Registry
+      resource User
     end
   end
 

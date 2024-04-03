@@ -33,7 +33,7 @@ defmodule AshPyro.Extensions.Resource.Verifiers.DataTableActions do
     private_fields =
       dsl_state
       |> Ash.Resource.Info.fields()
-      |> Enum.filter(& &1.private?)
+      |> Enum.filter(&(!&1.public?))
       |> MapSet.new(& &1.name)
 
     errors
@@ -212,7 +212,7 @@ defmodule AshPyro.Extensions.Resource.Verifiers.DataTableActions do
             [
               DslError.exception(
                 path: [:pyro, :data_table, :action, action_name],
-                message: "action #{inspect(action_name)}, #{inspect(column_name)} is a private field"
+                message: "action #{inspect(action_name)}, #{inspect(column_name)} is not a public field"
               )
               | errors
             ]

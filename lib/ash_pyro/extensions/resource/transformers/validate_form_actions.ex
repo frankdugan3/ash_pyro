@@ -7,10 +7,10 @@ defmodule AshPyro.Extensions.Resource.Verifiers.FormActions do
 
   @impl true
   def verify(dsl_state) do
-    {private_attributes, public_attributes} =
+    {public_attributes, private_attributes} =
       dsl_state
       |> Verifier.get_entities([:attributes])
-      |> Enum.split_with(& &1.private?)
+      |> Enum.split_with(& &1.public?)
 
     {writable_attributes, unwritable_attributes} =
       Enum.split_with(public_attributes, & &1.writable?)
@@ -167,7 +167,7 @@ defmodule AshPyro.Extensions.Resource.Verifiers.FormActions do
                         [
                           DslError.exception(
                             path: [:pyro, :form, :action, action_name],
-                            message: "action #{action_name}: #{field_name} is a private attribute"
+                            message: "action #{action_name}: #{field_name} is not a public attribute"
                           )
                           | errors
                         ]
