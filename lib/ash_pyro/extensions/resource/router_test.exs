@@ -21,7 +21,7 @@ defmodule AshPyro.Extensions.Resource.RouterTest do
     pyro do
       data_table do
         live_view do
-          page "/users", :users, AshPyro.Extentions.Resource.Router do
+          page "/users", :users do
             show "/", :show, :read
             update "/edit", :edit, :read
             create "/new", :new, :read

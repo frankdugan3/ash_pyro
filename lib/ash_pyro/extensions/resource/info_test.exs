@@ -19,7 +19,7 @@ defmodule AshPyro.Extensions.Resource.InfoTest do
     pyro do
       data_table do
         live_view do
-          page "/users", :companies, AshPyro.Extentions.Resource.Info do
+          page "/users", :companies do
             list "/", :index, :read
           end
         end
