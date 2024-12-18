@@ -47,30 +47,35 @@ defmodule AshPyro.Extensions.Resource.Transformers.MergePages do
     live_actions =
       live_action_types.list
       |> Enum.reduce([], fn list, acc ->
-        child_actions =
-          Enum.concat([
-            live_action_types.show,
-            live_action_types.update
-          ])
-
         acc =
-          Enum.reduce(child_actions, acc, fn action, acc ->
+          Enum.reduce(live_action_types.show, acc, fn show, acc ->
             path =
-              build_path([page.path, list.path, identity_to_path(action.identity), action.path])
+              build_path([page.path, list.path, identity_to_path(show.identity), show.path])
 
-            live_action = String.to_atom("#{list.live_action}_#{action.live_action}")
+            live_action = String.to_atom("#{list.live_action}_#{show.live_action}")
 
             [
-              %{action | path: path, live_action: live_action, parent_action: list.live_action}
+              %{show | path: path, live_action: live_action, parent_action: list.live_action}
+              | acc
+            ]
+          end)
+
+        acc =
+          Enum.reduce(live_action_types.update, acc, fn update, acc ->
+            path =
+              build_path([page.path, list.path, identity_to_path(update.identity), update.path])
+
+            live_action = String.to_atom("#{list.live_action}_#{update.live_action}")
+
+            [
+              %{update | path: path, live_action: live_action, parent_action: list.live_action}
               | acc
             ]
           end)
 
         acc =
           Enum.reduce(live_action_types.create, acc, fn create, acc ->
-            path =
-              build_path([page.path, list.path, create.path])
-
+            path = build_path([page.path, list.path, create.path])
             live_action = String.to_atom("#{list.live_action}_#{create.live_action}")
 
             [
@@ -110,9 +115,7 @@ defmodule AshPyro.Extensions.Resource.Transformers.MergePages do
 
         acc =
           Enum.reduce(live_action_types.create, acc, fn action, acc ->
-            path =
-              build_path([page.path, show_identity, show.path, action.path])
-
+            path = build_path([page.path, show_identity, show.path, action.path])
             live_action = String.to_atom("#{show.live_action}_#{action.live_action}")
 
             [
