@@ -103,8 +103,7 @@ defmodule AshPyro.Extensions.Resource.RouterTest do
         sensitive?: true,
         allow_nil?: false,
         constraints: [
-          max_length: 160,
-          match: ~r/^[\w.!#$%&’*+\-\/=?\^`{|}~]+@[A-Z0-9-]+(\.[A-Z0-9-]+)*$/i
+          max_length: 160
         ],
         public?: true
 
@@ -161,7 +160,6 @@ defmodule AshPyro.Extensions.Resource.RouterTest do
 
       create :create do
         primary? true
-
         argument :best_friend_id, :uuid
         change manage_relationship(:best_friend_id, :best_friend, type: :append_and_remove)
 
@@ -170,7 +168,7 @@ defmodule AshPyro.Extensions.Resource.RouterTest do
 
       update :update do
         primary? true
-
+        require_atomic? false
         argument :best_friend_id, :uuid
         change manage_relationship(:best_friend_id, :best_friend, type: :append_and_remove)
       end

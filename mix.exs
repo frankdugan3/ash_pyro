@@ -23,8 +23,13 @@ defmodule AshPyro.MixProject do
       elixirc_paths: ["lib"],
       aliases: aliases(),
       compilers: [:yecc] ++ Mix.compilers(),
-      dialyzer: [plt_add_apps: [:ash, :spark, :ecto, :mix]],
-      preferred_cli_env: [
+      dialyzer: [plt_add_apps: [:ash, :spark, :ecto, :mix]]
+    ]
+  end
+
+  def cli do
+    [
+      preferred_envs: [
         "test.watch": :test
       ]
     ]
