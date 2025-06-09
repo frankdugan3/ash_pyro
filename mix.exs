@@ -112,7 +112,6 @@ defmodule AshPyro.MixProject do
       {:ex_check, "~> 0.15",
        [env: :prod, hex: "ex_check", only: :dev, runtime: false, repo: "hexpm"]},
       {:ex_doc, ">= 0.0.0", only: :dev, runtime: false},
-      {:faker, "~> 0.17", only: [:test, :dev]},
       {:git_ops, "~> 2.6", only: :dev},
       {:mix_audit, ">= 0.0.0", only: :dev, runtime: false},
       {:mix_test_watch, "~> 1.0", only: [:dev, :test], runtime: false},
