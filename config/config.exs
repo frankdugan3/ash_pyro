@@ -50,6 +50,13 @@ if Mix.env() == :dev do
 end
 
 if Mix.env() == :test do
+  config :mix_test_watch,
+    clear: true,
+    tasks: [
+      "test",
+      "credo"
+    ]
+
   config :ash, :validate_domain_resource_inclusion?, false
   config :ash, :validate_domain_config_inclusion?, false
 end

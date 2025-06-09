@@ -1,5 +1,6 @@
 form_field = %Spark.Dsl.Entity{
-  describe: "Declare non-default behavior for a specific form field in the `AshPyro.Extensions.Resource` extension.",
+  describe:
+    "Declare non-default behavior for a specific form field in the `AshPyro.Extensions.Resource` extension.",
   name: :field,
   schema: AshPyro.Extensions.Resource.Form.Field.schema(),
   target: AshPyro.Extensions.Resource.Form.Field,
@@ -7,7 +8,8 @@ form_field = %Spark.Dsl.Entity{
 }
 
 form_field_group = %Spark.Dsl.Entity{
-  describe: "Configure the appearance of form field groups in the `AshPyro.Extensions.Resource` extension.",
+  describe:
+    "Configure the appearance of form field groups in the `AshPyro.Extensions.Resource` extension.",
   name: :field_group,
   schema: AshPyro.Extensions.Resource.Form.FieldGroup.schema(),
   target: AshPyro.Extensions.Resource.Form.FieldGroup,
@@ -30,7 +32,8 @@ form_action = %Spark.Dsl.Entity{
 }
 
 form_action_type = %Spark.Dsl.Entity{
-  describe: "Configure default form appearance for actions of type(s). Will be ignored by actions configured explicitly.",
+  describe:
+    "Configure default form appearance for actions of type(s). Will be ignored by actions configured explicitly.",
   name: :action_type,
   schema: AshPyro.Extensions.Resource.Form.ActionType.schema(),
   target: AshPyro.Extensions.Resource.Form.ActionType,
@@ -90,7 +93,8 @@ data_table_action_type = %Spark.Dsl.Entity{
 }
 
 data_table = %Spark.Dsl.Section{
-  describe: "Configure the appearance of data tables in the `AshPyro.Extensions.Resource` extension.",
+  describe:
+    "Configure the appearance of data tables in the `AshPyro.Extensions.Resource` extension.",
   name: :data_table,
   schema: [
     exclude: [

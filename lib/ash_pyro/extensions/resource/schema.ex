@@ -35,7 +35,8 @@ defmodule AshPyro.Extensions.Resource.Schema do
         {:tuple,
          [
            :atom,
-           {:in, [:asc, :desc, :asc_nils_first, :asc_nils_last, :desc_nils_first, :desc_nils_last]}
+           {:in,
+            [:asc, :desc, :asc_nils_first, :asc_nils_last, :desc_nils_first, :desc_nils_last]}
          ]}},
        {:list, :atom},
        {:list, :string},

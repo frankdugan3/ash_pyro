@@ -59,7 +59,8 @@ defmodule AshPyro.Extensions.Resource.Transformers do
     inherit_pyro_config(dsl, [:pyro, :data_table], entity_name, key, default)
   end
 
-  def inherit_pyro_config(dsl, kind, entity_name, key, default) when kind in [:card, :card_grid] do
+  def inherit_pyro_config(dsl, kind, entity_name, key, default)
+      when kind in [:card, :card_grid] do
     inherit_pyro_config(dsl, [:pyro, :card_grid], entity_name, key, default)
   end
 
@@ -122,11 +123,13 @@ defmodule AshPyro.Extensions.Resource.Transformers do
   def get_nested(value, [], _), do: value
   def get_nested(%{} = map, [key], default), do: Map.get(map, key, default)
 
-  def get_nested(%{} = map, [key | keys], default), do: get_nested(Map.get(map, key), keys, default)
+  def get_nested(%{} = map, [key | keys], default),
+    do: get_nested(Map.get(map, key), keys, default)
 
   def get_nested([_ | _] = keyword, [key], default), do: Keyword.get(keyword, key, default)
 
-  def get_nested([_ | _] = keyword, [key | keys], default), do: get_nested(Keyword.get(keyword, key), keys, default)
+  def get_nested([_ | _] = keyword, [key | keys], default),
+    do: get_nested(Keyword.get(keyword, key), keys, default)
 
   def get_nested(_, _, default), do: default
 
@@ -136,7 +139,8 @@ defmodule AshPyro.Extensions.Resource.Transformers do
   def default_label(%{name: name}), do: default_label(name)
   def default_label(name) when is_atom(name), do: default_label(Atom.to_string(name))
 
-  def default_label(name) when is_binary(name), do: name |> String.split("_") |> Enum.map_join(" ", &String.capitalize/1)
+  def default_label(name) when is_binary(name),
+    do: name |> String.split("_") |> Enum.map_join(" ", &String.capitalize/1)
 
   defmacro __using__(_env) do
     quote do

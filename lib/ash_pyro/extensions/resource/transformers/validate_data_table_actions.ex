@@ -45,7 +45,10 @@ defmodule AshPyro.Extensions.Resource.Verifiers.DataTableActions do
     |> validate_action_columns(action, public_fields, private_fields)
   end
 
-  defp check_action_for_duplicate_path_names(errors, %DataTable.Action{columns: columns, name: action_name}) do
+  defp check_action_for_duplicate_path_names(errors, %DataTable.Action{
+         columns: columns,
+         name: action_name
+       }) do
     columns
     |> Enum.group_by(fn %{path: path, name: name} ->
       path
@@ -61,7 +64,8 @@ defmodule AshPyro.Extensions.Resource.Verifiers.DataTableActions do
         [
           DslError.exception(
             path: [:pyro, :data_table, :action, action_name, name],
-            message: "action #{inspect(action_name)}, #{name_count} columns duplicate the path/name #{inspect(name)}"
+            message:
+              "action #{inspect(action_name)}, #{name_count} columns duplicate the path/name #{inspect(name)}"
           )
           | errors
         ]
@@ -69,7 +73,10 @@ defmodule AshPyro.Extensions.Resource.Verifiers.DataTableActions do
     end)
   end
 
-  defp check_action_for_duplicate_path_labels(errors, %DataTable.Action{columns: columns, name: action_name}) do
+  defp check_action_for_duplicate_path_labels(errors, %DataTable.Action{
+         columns: columns,
+         name: action_name
+       }) do
     columns
     |> Enum.group_by(fn %{path: path, label: label} ->
       path
@@ -85,7 +92,8 @@ defmodule AshPyro.Extensions.Resource.Verifiers.DataTableActions do
         [
           DslError.exception(
             path: [:pyro, :data_table, :action, action_name, label],
-            message: "action #{inspect(action_name)}, #{label_count} columns duplicate the path/label #{inspect(label)}"
+            message:
+              "action #{inspect(action_name)}, #{label_count} columns duplicate the path/label #{inspect(label)}"
           )
           | errors
         ]
@@ -140,7 +148,8 @@ defmodule AshPyro.Extensions.Resource.Verifiers.DataTableActions do
               [
                 DslError.exception(
                   path: [:pyro, :data_table, :action, action_name, :default_sort],
-                  message: "action #{inspect(action_name)}, sort field #{inspect(field)} not in columns"
+                  message:
+                    "action #{inspect(action_name)}, sort field #{inspect(field)} not in columns"
                 )
                 | errors
               ]
@@ -152,7 +161,8 @@ defmodule AshPyro.Extensions.Resource.Verifiers.DataTableActions do
             [
               DslError.exception(
                 path: [:pyro, :data_table, :action, action_name, :default_display],
-                message: "action #{inspect(action_name)}, sort field #{inspect(field)} not in default display"
+                message:
+                  "action #{inspect(action_name)}, sort field #{inspect(field)} not in default display"
               )
               | errors
             ]
@@ -188,7 +198,8 @@ defmodule AshPyro.Extensions.Resource.Verifiers.DataTableActions do
               action_name,
               :default_display
             ],
-            message: "action #{inspect(action_name)}, display field #{inspect(field)} not in columns"
+            message:
+              "action #{inspect(action_name)}, display field #{inspect(field)} not in columns"
           )
           | errors
         ]
@@ -212,7 +223,8 @@ defmodule AshPyro.Extensions.Resource.Verifiers.DataTableActions do
             [
               DslError.exception(
                 path: [:pyro, :data_table, :action, action_name],
-                message: "action #{inspect(action_name)}, #{inspect(column_name)} is not a public field"
+                message:
+                  "action #{inspect(action_name)}, #{inspect(column_name)} is not a public field"
               )
               | errors
             ]

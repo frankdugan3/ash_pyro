@@ -38,7 +38,10 @@ defmodule AshPyro.Extensions.Resource.Transformers.MergePages do
     merge_page(%{page | route_helper: String.to_atom("#{name}_path")}, acc)
   end
 
-  defp merge_page(%Page{view_as: :list_and_modal, live_actions: live_actions} = page, {dsl, errors}) do
+  defp merge_page(
+         %Page{view_as: :list_and_modal, live_actions: live_actions} = page,
+         {dsl, errors}
+       ) do
     live_action_types =
       live_actions
       |> Enum.map(&expand_live_action_defaults(&1, dsl))
@@ -97,7 +100,10 @@ defmodule AshPyro.Extensions.Resource.Transformers.MergePages do
     {dsl, errors}
   end
 
-  defp merge_page(%Page{view_as: :show_and_modal, live_actions: live_actions} = page, {dsl, errors}) do
+  defp merge_page(
+         %Page{view_as: :show_and_modal, live_actions: live_actions} = page,
+         {dsl, errors}
+       ) do
     live_action_types =
       live_actions
       |> Enum.map(&expand_live_action_defaults(&1, dsl))
@@ -249,7 +255,10 @@ defmodule AshPyro.Extensions.Resource.Transformers.MergePages do
   end
 
   # TODO: Check
-  defp expand_live_action_defaults(%Page.List{default_limit: nil, action: action} = live_action, dsl) do
+  defp expand_live_action_defaults(
+         %Page.List{default_limit: nil, action: action} = live_action,
+         dsl
+       ) do
     case_result =
       case dsl |> filter_actions(&(&1.type == :read && &1.name == action)) |> List.first() do
         %{pagination: %{default_limit: limit}} when is_integer(limit) ->
@@ -332,7 +341,8 @@ defmodule AshPyro.Extensions.Resource.Transformers.MergePages do
   defp compare_paths([":" <> _ | _], _), do: false
 
   # identical segments must be compared on sub-path
-  defp compare_paths([left_segment | left], [right_segment | right]) when left_segment == right_segment do
+  defp compare_paths([left_segment | left], [right_segment | right])
+       when left_segment == right_segment do
     compare_paths(left, right)
   end
 

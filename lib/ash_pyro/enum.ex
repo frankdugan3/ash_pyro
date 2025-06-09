@@ -104,7 +104,8 @@ defmodule AshPyro.Enum do
     |> cast_enum_type(modifiers, caller, sigil_name)
   end
 
-  defp cast_enum_type(enums, [], caller, sigil_name), do: cast_enum_type(enums, [?a], caller, sigil_name)
+  defp cast_enum_type(enums, [], caller, sigil_name),
+    do: cast_enum_type(enums, [?a], caller, sigil_name)
 
   defp cast_enum_type(enums, modifiers, caller, sigil_name) do
     {type, list?} =
@@ -118,7 +119,8 @@ defmodule AshPyro.Enum do
           reraise(
             ArgumentError,
             [
-              message: "sigil ~#{sigil_name} can only take one type mod, you tried both #{old} and #{mod}"
+              message:
+                "sigil ~#{sigil_name} can only take one type mod, you tried both #{old} and #{mod}"
             ],
             stacktrace
           )
@@ -166,7 +168,8 @@ defmodule AshPyro.Enum do
         reraise(
           ArgumentError,
           [
-            message: "you provided more than one enum, but did not specify you wanted a list with the \"l\" modifier"
+            message:
+              "you provided more than one enum, but did not specify you wanted a list with the \"l\" modifier"
           ],
           stacktrace
         )

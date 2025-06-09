@@ -73,7 +73,8 @@ defmodule AshPyro.Extensions.Resource.LiveView.Page.List do
     default_limit: [
       type: :integer,
       required: false,
-      doc: "The default pagination limit (defaults to the resource's `default_limit`, falling back to `max_page_size`)."
+      doc:
+        "The default pagination limit (defaults to the resource's `default_limit`, falling back to `max_page_size`)."
     ],
     count?: [
       type: :boolean,

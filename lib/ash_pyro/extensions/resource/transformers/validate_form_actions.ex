@@ -70,7 +70,8 @@ defmodule AshPyro.Extensions.Resource.Verifiers.FormActions do
                   [
                     DslError.exception(
                       path: [:pyro, :form, :action, action_name, label],
-                      message: "#{label_count} field/field_groups duplicate the path/label #{label}"
+                      message:
+                        "#{label_count} field/field_groups duplicate the path/label #{label}"
                     )
                     | errors
                   ]
@@ -117,7 +118,8 @@ defmodule AshPyro.Extensions.Resource.Verifiers.FormActions do
                       [
                         DslError.exception(
                           path: [:pyro, :form, :action, action_name],
-                          message: "#{count} autofocus fields; exactly one field must have autofocus"
+                          message:
+                            "#{count} autofocus fields; exactly one field must have autofocus"
                         )
                         | errors
                       ]
@@ -150,7 +152,8 @@ defmodule AshPyro.Extensions.Resource.Verifiers.FormActions do
                         [
                           DslError.exception(
                             path: [:pyro, :form, :action, action_name],
-                            message: "action #{action_name}: #{field_name} is not an accepted attribute or argument"
+                            message:
+                              "action #{action_name}: #{field_name} is not an accepted attribute or argument"
                           )
                           | errors
                         ]
@@ -167,7 +170,8 @@ defmodule AshPyro.Extensions.Resource.Verifiers.FormActions do
                         [
                           DslError.exception(
                             path: [:pyro, :form, :action, action_name],
-                            message: "action #{action_name}: #{field_name} is not a public attribute"
+                            message:
+                              "action #{action_name}: #{field_name} is not a public attribute"
                           )
                           | errors
                         ]
@@ -176,7 +180,8 @@ defmodule AshPyro.Extensions.Resource.Verifiers.FormActions do
                         [
                           DslError.exception(
                             path: [:pyro, :form, :action, action_name],
-                            message: "action #{action_name}: #{field_name} is an unwritable attribute"
+                            message:
+                              "action #{action_name}: #{field_name} is an unwritable attribute"
                           )
                           | errors
                         ]

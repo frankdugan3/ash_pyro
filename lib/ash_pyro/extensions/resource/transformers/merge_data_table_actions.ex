@@ -63,7 +63,8 @@ defmodule AshPyro.Extensions.Resource.Transformers.MergeDataTableActions do
     end
   end
 
-  defp reduce_data_table_entities(%DataTable.ActionType{name: names} = type, acc) when is_list(names) do
+  defp reduce_data_table_entities(%DataTable.ActionType{name: names} = type, acc)
+       when is_list(names) do
     columns = merge_columns(type.columns, acc)
 
     Enum.reduce(names, acc, fn name, acc ->
@@ -81,7 +82,8 @@ defmodule AshPyro.Extensions.Resource.Transformers.MergeDataTableActions do
     merge_action_type(acc, Map.put(type, :columns, columns))
   end
 
-  defp reduce_data_table_entities(%DataTable.Action{name: names} = action, acc) when is_list(names) do
+  defp reduce_data_table_entities(%DataTable.Action{name: names} = action, acc)
+       when is_list(names) do
     columns = merge_columns(action.columns, acc)
 
     Enum.reduce(names, acc, fn name, acc ->

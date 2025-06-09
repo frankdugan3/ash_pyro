@@ -23,7 +23,10 @@ defmodule AshPyro.MixProject do
       elixirc_paths: ["lib"],
       aliases: aliases(),
       compilers: [:yecc] ++ Mix.compilers(),
-      dialyzer: [plt_add_apps: [:ash, :spark, :ecto, :mix]]
+      dialyzer: [plt_add_apps: [:ash, :spark, :ecto, :mix]],
+      preferred_cli_env: [
+        "test.watch": :test
+      ]
     ]
   end
 
@@ -94,34 +97,38 @@ defmodule AshPyro.MixProject do
     ]
   end
 
-  # Run "mix help compile.app" to learn about applications.
   def application do
     [
       extra_applications: [:logger]
     ]
   end
 
-  # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      # Code quality tooling
-      {:credo, ">= 0.0.0", only: :dev, runtime: false},
+      # Dev tooling
+      {:credo, ">= 0.0.0", only: [:test, :dev], runtime: false},
       {:dialyxir, ">= 0.0.0", only: :dev, runtime: false},
       {:doctor, ">= 0.0.0", only: :dev, runtime: false},
-      {:ex_check, "~> 0.15", [env: :prod, hex: "ex_check", only: :dev, runtime: false, repo: "hexpm"]},
-      {:faker, "~> 0.17", only: [:test, :dev]},
-      {:mix_audit, ">= 0.0.0", only: :dev, runtime: false},
-      {:styler, "~> 0.11", only: [:dev, :test], runtime: false},
-      # Build tooling
+      {:ex_check, "~> 0.15",
+       [env: :prod, hex: "ex_check", only: :dev, runtime: false, repo: "hexpm"]},
       {:ex_doc, ">= 0.0.0", only: :dev, runtime: false},
+      {:faker, "~> 0.17", only: [:test, :dev]},
       {:git_ops, "~> 2.6", only: :dev},
+      {:mix_audit, ">= 0.0.0", only: :dev, runtime: false},
+      {:mix_test_watch, "~> 1.0", only: [:dev, :test], runtime: false},
+      {:usage_rules, "~> 0.1", only: [:dev]},
       # Core dependencies
-      {:ash, "~> 3.0"}
+      {:ash, "~> 3.0"},
+      {:igniter, "~> 0.6", optional: true},
+      {:spark, "~> 2.2.63"}
     ]
   end
 
   defp aliases do
     [
+      rules: "usage_rules.sync CLAUDE.md --all --link-to-folder rules --link-style at --yes",
+      update: ["deps.update --all", "rules"],
+      format: ["format --migrate"],
       build: [
         "spark.formatter --extensions AshPyro.Extensions.Resource",
         "format"

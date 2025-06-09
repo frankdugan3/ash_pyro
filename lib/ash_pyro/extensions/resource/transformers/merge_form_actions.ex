@@ -106,7 +106,8 @@ defmodule AshPyro.Extensions.Resource.Transformers.MergeFormActions do
     end
   end
 
-  defp merge_action_type(%{errors: errors} = acc, %{name: name}) when name not in [:create, :update, :destroy] do
+  defp merge_action_type(%{errors: errors} = acc, %{name: name})
+       when name not in [:create, :update, :destroy] do
     errors = [
       DslError.exception(
         path: [:pyro, :form, :action_type],
