@@ -72,7 +72,7 @@ defmodule AshPyro.MixProject do
       extras: extras(),
       groups_for_extras: groups_for_extras(),
       groups_for_modules: groups_for_modules(),
-      groups_for_functions: [
+      groups_for_docs: [
         Macros: &(&1[:type] == :macro)
       ]
     ]
