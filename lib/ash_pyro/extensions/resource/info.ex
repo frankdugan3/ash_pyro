@@ -11,7 +11,7 @@ defmodule AshPyro.Extensions.Resource.Info do
       iex> form_for(AshPyro.Extensions.Resource.InfoTest.User, :create) |> Map.get(:fields) |> Enum.map(& &1.name)
       [:primary, :authorization, :friendships, :notes]
   """
-  @spec form_for(Ash.Resource.t(), atom()) :: AshPyro.Extensions.Resource.Form.Action | nil
+  @spec form_for(Ash.Resource.t(), atom()) :: AshPyro.Extensions.Resource.Form.Action.t() | nil
   def form_for(resource, action_name) do
     resource
     |> Spark.Dsl.Extension.get_entities([:pyro, :form])
@@ -22,8 +22,8 @@ defmodule AshPyro.Extensions.Resource.Info do
 
   def form_field(resource, action, field) do
     case form_for(resource, action) do
-      nil -> nil
-      %{fields: fields} -> Enum.find(fields, &(&1.name == field))
+      %{fields: fields} when is_list(fields) -> Enum.find(fields, &(&1.name == field))
+      _ -> nil
     end
   end
 
@@ -35,7 +35,7 @@ defmodule AshPyro.Extensions.Resource.Info do
       iex> page_for(AshPyro.Extensions.Resource.InfoTest.User, :companies) |> Map.get(:name)
       :companies
   """
-  @spec page_for(Ash.Resource.t(), atom()) :: AshPyro.Extensions.Resource.LiveView.Page | nil
+  @spec page_for(Ash.Resource.t(), atom()) :: AshPyro.Extensions.Resource.LiveView.Page.t() | nil
   def page_for(resource, page_name) do
     resource
     |> Spark.Dsl.Extension.get_entities([:pyro, :live_view])
