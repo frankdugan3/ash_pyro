@@ -130,7 +130,7 @@ defmodule AshPyro.MixProject do
 
   defp aliases do
     [
-      rules: "usage_rules.sync CLAUDE.md --all --link-to-folder rules --link-style at --yes",
+      rules: "usage_rules.sync CLAUDE.md --all --link-to-folder deps --link-style at --yes",
       update: ["deps.update --all", "rules"],
       format: ["format --migrate"],
       build: [
