@@ -17,10 +17,11 @@ defmodule AshPyro.MixProject do
       package: package(),
       deps: deps(),
       docs: docs(),
-      test_paths: ["lib"],
+      test_paths: ["test"],
       name: "AshPyro",
       source_url: @source_url,
-      elixirc_paths: ["lib"],
+      elixirc_paths: elixirc_paths(Mix.env()),
+      consolidate_protocols: Mix.env() != :test,
       aliases: aliases(),
       compilers: [:yecc] ++ Mix.compilers(),
       dialyzer: [plt_add_apps: [:ash, :spark, :ecto, :mix]]
@@ -34,6 +35,9 @@ defmodule AshPyro.MixProject do
       ]
     ]
   end
+
+  defp elixirc_paths(:test), do: ["lib", "test"]
+  defp elixirc_paths(_), do: ["lib"]
 
   defp extras do
     "documentation/**/*.md"
