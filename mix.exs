@@ -78,6 +78,9 @@ defmodule AshPyro.MixProject do
       groups_for_modules: groups_for_modules(),
       groups_for_docs: [
         Macros: &(&1[:type] == :macro)
+      ],
+      nest_modules_by_prefix: [
+        AshPyro.Extensions.Resource
       ]
     ]
   end
