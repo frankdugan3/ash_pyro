@@ -2,6 +2,8 @@ defmodule AshPyro.MixProject do
   @moduledoc false
   use Mix.Project
 
+  alias AshPyro.Extensions.Resource
+
   @source_url "https://github.com/frankdugan3/ash_pyro"
   @version "0.2.1"
   @description """
@@ -80,7 +82,7 @@ defmodule AshPyro.MixProject do
         Macros: &(&1[:type] == :macro)
       ],
       nest_modules_by_prefix: [
-        AshPyro.Extensions.Resource
+        Resource
       ]
     ]
   end
@@ -127,6 +129,7 @@ defmodule AshPyro.MixProject do
       {:git_ops, "~> 2.6", only: :dev},
       {:mix_audit, ">= 0.0.0", only: :dev, runtime: false},
       {:mix_test_watch, "~> 1.0", only: [:dev, :test], runtime: false},
+      {:quokka, "~> 2.10", only: [:dev, :test], runtime: false},
       {:usage_rules, "~> 0.1", only: [:dev]},
       # Core dependencies
       {:ash, "~> 3.0"},
