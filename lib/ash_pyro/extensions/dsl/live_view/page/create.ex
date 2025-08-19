@@ -1,9 +1,11 @@
-defmodule AshPyro.Extensions.Resource.LiveView.Page.List do
+defmodule AshPyro.Extensions.Dsl.LiveView.Page.Create do
   @moduledoc """
-  A list type live_action for a LiveView page.
+  A create type live_action for a LiveView page.
   """
 
-  use AshPyro.Extensions.Resource.Schema
+  use AshPyro.Extensions.Dsl.Schema
+
+  alias Spark.Dsl.Entity
 
   @type t :: %__MODULE__{}
   defstruct [
@@ -15,9 +17,6 @@ defmodule AshPyro.Extensions.Resource.LiveView.Page.List do
     :label,
     :description,
     :class,
-    :pagination,
-    :default_limit,
-    :count?,
     :icon_name,
     # meta fields
     parent_action: nil,
@@ -42,12 +41,12 @@ defmodule AshPyro.Extensions.Resource.LiveView.Page.List do
     action: [
       type: :atom,
       required: true,
-      doc: "The action to use to load the records."
+      doc: "The action to use to create the record."
     ],
     display_as: [
-      type: {:one_of, [:data_table, :card_grid]},
+      type: {:one_of, [:form]},
       required: false,
-      default: :data_table,
+      default: :form,
       doc: "How to display the action."
     ],
     label: [
@@ -65,30 +64,22 @@ defmodule AshPyro.Extensions.Resource.LiveView.Page.List do
       required: false,
       doc: "Customize action classes."
     ],
-    pagination: [
-      type: pagination_schema_type(),
-      required: false,
-      doc: "The pagination type (defaults to `:offset` if available)."
-    ],
-    default_limit: [
-      type: :integer,
-      required: false,
-      doc:
-        "The default pagination limit (defaults to the resource's `default_limit`, falling back to `max_page_size`)."
-    ],
-    count?: [
-      type: :boolean,
-      required: false,
-      doc: "Whether to count the query (defaults to true for `:offset` pagination if available)."
-    ],
     icon_name: [
       type: :string,
       required: false,
-      default: "hero-list-bullet-solid",
+      default: "hero-plus-circle-solid",
       doc: "The icon to use for links/buttons."
     ]
   ]
 
+  @entity %Entity{
+    args: [:path, :live_action, :action],
+    describe: "Configure a create action for this resource.",
+    name: :create,
+    schema: @schema,
+    target: __MODULE__
+  }
+
   @doc false
-  def schema, do: @schema
+  def entity, do: @entity
 end

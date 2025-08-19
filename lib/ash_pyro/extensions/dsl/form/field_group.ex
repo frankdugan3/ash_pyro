@@ -1,18 +1,21 @@
-defmodule AshPyro.Extensions.Resource.Form.FieldGroup do
+defmodule AshPyro.Extensions.Dsl.Form.FieldGroup do
   @moduledoc """
   A group of form fields in the `AshPyro.Extensions.Resource` extension.
   """
 
-  use AshPyro.Extensions.Resource.Schema
+  use AshPyro.Extensions.Dsl.Schema
 
-  defstruct [:name, :label, :class, :path, :fields]
+  alias AshPyro.Extensions.Dsl.Form.Field
+  alias Spark.Dsl.Entity
+
+  defstruct [:class, :fields, :label, :name, :path]
 
   @type t :: %__MODULE__{
-          name: String.t(),
-          label: String.t(),
           class: String.t(),
-          path: [atom()],
-          fields: [AshPyro.Extensions.Resource.Form.Field.t()]
+          fields: [Field.t()],
+          label: String.t(),
+          name: String.t(),
+          path: [atom()]
         }
 
   @schema [
@@ -38,6 +41,19 @@ defmodule AshPyro.Extensions.Resource.Form.FieldGroup do
     ]
   ]
 
+  @entity %Entity{
+    args: [:name],
+    describe:
+      "Configure the appearance of form field groups in the `AshPyro.Extensions.Dsl` extension.",
+    entities: [
+      fields: [Field.entity()]
+    ],
+    name: :field_group,
+    recursive_as: :fields,
+    schema: @schema,
+    target: __MODULE__
+  }
+
   @doc false
-  def schema, do: @schema
+  def entity, do: @entity
 end

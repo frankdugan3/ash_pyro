@@ -3,9 +3,11 @@ defmodule AshPyro.Extensions.Resource.Transformers.MergeDataTableActions do
 
   use AshPyro.Extensions.Resource.Transformers
 
-  alias AshPyro.Extensions.Resource.DataTable
+  alias Ash.Resource.Dsl
+  alias Ash.Resource.Info
+  alias AshPyro.Extensions.Dsl.DataTable
 
-  @ash_resource_transformers Ash.Resource.Dsl.transformers()
+  @ash_resource_transformers Dsl.transformers()
 
   @impl true
   def after?(module) when module in @ash_resource_transformers, do: true
@@ -39,27 +41,32 @@ defmodule AshPyro.Extensions.Resource.Transformers.MergeDataTableActions do
           end)
           |> Enum.map(& &1.name)
 
-        %{data_table_actions: data_table_actions, errors: errors} =
+        %{
+          data_table_actions: data_table_actions,
+          data_table_types: data_table_types,
+          to_find: to_find
+        } =
           data_table_entities
           |> Enum.reduce(
             %{
-              dsl: dsl,
               data_table_actions: [],
               data_table_types: %{},
-              to_find: expected_action_names,
+              dsl: dsl,
               exclusions: excluded_data_table_action_names,
-              errors: []
+              to_find: expected_action_names
             },
             &reduce_data_table_entities/2
           )
-          |> merge_defaults_from_types()
+
+        data_table_actions =
+          merge_defaults_from_types(data_table_actions, to_find, dsl, data_table_types)
 
         dsl =
           Enum.reduce(data_table_actions, dsl, fn data_table_action, dsl ->
             Transformer.add_entity(dsl, [:pyro, :data_table], data_table_action, prepend: true)
           end)
 
-        handle_errors(errors, "data table", dsl)
+        {:ok, dsl}
     end
   end
 
@@ -105,32 +112,26 @@ defmodule AshPyro.Extensions.Resource.Transformers.MergeDataTableActions do
     acc
   end
 
-  defp merge_action_type(%{errors: errors} = acc, %{name: name}) when name not in [:read] do
-    errors = [
-      DslError.exception(
-        path: [:pyro, :data_table, :action_type],
-        message: """
-        unsupported action type: #{name}
-        """
-      )
-      | errors
-    ]
-
-    Map.put(acc, :errors, errors)
+  defp merge_action_type(_acc, %{name: name}) when name not in [:read] do
+    {:error,
+     DslError.exception(
+       path: [:pyro, :data_table, :action_type],
+       message: """
+       unsupported action type: #{name}
+       """
+     )}
+    |> raise_error()
   end
 
-  defp merge_action_type(%{data_table_types: %{read: _}, errors: errors} = acc, %{name: :read}) do
-    errors = [
-      DslError.exception(
-        path: [:pyro, :data_table, :action_type],
-        message: """
-        action type :read has already been defined
-        """
-      )
-      | errors
-    ]
-
-    Map.put(acc, :errors, errors)
+  defp merge_action_type(%{data_table_types: %{read: _}}, %{name: :read}) do
+    {:error,
+     DslError.exception(
+       path: [:pyro, :data_table, :action_type],
+       message: """
+       action type :read has already been defined
+       """
+     )}
+    |> raise_error()
   end
 
   defp merge_action_type(%{data_table_types: types} = acc, %{name: name} = type) do
@@ -138,25 +139,21 @@ defmodule AshPyro.Extensions.Resource.Transformers.MergeDataTableActions do
     Map.put(acc, :data_table_types, types)
   end
 
-  defp merge_action(%{errors: errors} = acc, %{name: name} = data_table_action) do
+  defp merge_action(acc, %{name: name} = data_table_action) do
     case validate_action_and_type(acc.dsl, name) do
       {:error, error} ->
-        errors = [error | errors]
-        Map.put(acc, :errors, errors)
+        raise_error({:error, error})
 
       {:ok, action} ->
         if name in acc.exclusions do
-          errors = [
-            DslError.exception(
-              path: [:pyro, :data_table, :action],
-              message: """
-              action #{name} is listed in `exclude`
-              """
-            )
-            | errors
-          ]
-
-          Map.put(acc, :errors, errors)
+          {:error,
+           DslError.exception(
+             path: [:pyro, :data_table, :action],
+             message: """
+             action #{name} is listed in `exclude`
+             """
+           )}
+          |> raise_error()
         else
           default_display =
             if data_table_action.default_display == [] do
@@ -212,41 +209,55 @@ defmodule AshPyro.Extensions.Resource.Transformers.MergeDataTableActions do
     end
   end
 
-  defp merge_defaults_from_types(%{to_find: []} = acc), do: acc
+  defp merge_defaults_from_types(data_table_actions, [], _dsl, _data_table_types),
+    do: data_table_actions
 
-  defp merge_defaults_from_types(acc) do
-    Enum.reduce(acc.to_find, acc, fn name, acc ->
-      case validate_action_and_type(acc.dsl, name) do
-        {:error, error} ->
-          errors = [error | acc.errors]
-          Map.put(acc, :errors, errors)
+  defp merge_defaults_from_types(data_table_actions, to_find, dsl, data_table_types) do
+    # Create an accumulator similar to the original logic but without error collection
+    acc = %{
+      dsl: dsl,
+      data_table_actions: data_table_actions,
+      data_table_types: data_table_types,
+      to_find: to_find,
+      # exclusions were already filtered out earlier
+      exclusions: []
+    }
 
-        {:ok, action} ->
-          type_default = Map.get(acc.data_table_types, action.type)
+    final_acc = Enum.reduce(to_find, acc, &process_default_data_table_action/2)
+    final_acc.data_table_actions
+  end
 
-          if type_default == nil do
-            errors = [
-              DslError.exception(
-                path: [:pyro, :data_table],
-                message: """
-                data table for action #{name} is not defined, has no type defaults, and is not excluded
-                """
-              )
-              | acc.errors
-            ]
+  defp process_default_data_table_action(name, acc) do
+    case validate_action_and_type(acc.dsl, name) do
+      {:error, error} ->
+        raise_error({:error, error})
 
-            Map.put(acc, :errors, errors)
-          else
-            merge_action(
-              acc,
-              Map.merge(
-                %DataTable.Action{name: name},
-                Map.drop(type_default, [:__struct__, :name])
-              )
-            )
-          end
-      end
-    end)
+      {:ok, action} ->
+        handle_data_table_action_with_type_default(acc, name, action)
+    end
+  end
+
+  defp handle_data_table_action_with_type_default(acc, name, action) do
+    type_default = Map.get(acc.data_table_types, action.type)
+
+    if type_default == nil do
+      {:error,
+       DslError.exception(
+         path: [:pyro, :data_table],
+         message: """
+         data table for action #{name} is not defined, has no type defaults, and is not excluded
+         """
+       )}
+      |> raise_error()
+    else
+      merge_action(
+        acc,
+        Map.merge(
+          %DataTable.Action{name: name},
+          Map.drop(type_default, [:__struct__, :name])
+        )
+      )
+    end
   end
 
   defp merge_columns(columns, acc, path \\ []) do
@@ -255,7 +266,7 @@ defmodule AshPyro.Extensions.Resource.Transformers.MergeDataTableActions do
         sortable? =
           if column.sortable? == true do
             # TODO: Take :pagination_type into account
-            Ash.Resource.Info.sortable?(acc.dsl, column.name, include_private?: false)
+            Info.sortable?(acc.dsl, column.name, include_private?: false)
           else
             column.sortable?
           end
@@ -267,6 +278,8 @@ defmodule AshPyro.Extensions.Resource.Transformers.MergeDataTableActions do
         |> Map.put(:sortable?, sortable?)
     end)
   end
+
+  defp raise_error({:error, exception}), do: raise(exception)
 
   defp maybe_append_path(root, nil), do: root
   defp maybe_append_path(root, []), do: root

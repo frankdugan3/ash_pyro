@@ -1,11 +1,15 @@
-defmodule AshPyro.Extensions.Resource.Form.Action do
+defmodule AshPyro.Extensions.Dsl.Form.Action do
   @moduledoc """
   A form for action(s) in the `AshPyro.Extensions.Resource` extension.
   """
-  use AshPyro.Extensions.Resource.Schema
+  use AshPyro.Extensions.Dsl.Schema
+
+  alias AshPyro.Extensions.Dsl.Form.Field
+  alias AshPyro.Extensions.Dsl.Form.FieldGroup
+  alias Spark.Dsl.Entity
 
   @type t :: %__MODULE__{}
-  defstruct [:name, :label, :description, :class, :fields]
+  defstruct [:class, :description, :fields, :label, :name]
 
   @schema [
     name: [
@@ -30,6 +34,17 @@ defmodule AshPyro.Extensions.Resource.Form.Action do
     ]
   ]
 
+  @entity %Entity{
+    args: [:name],
+    describe: "Configure the appearance forms forms for specific action(s).",
+    entities: [
+      fields: [Field.entity(), FieldGroup.entity()]
+    ],
+    name: :action,
+    schema: @schema,
+    target: __MODULE__
+  }
+
   @doc false
-  def schema, do: @schema
+  def entity, do: @entity
 end

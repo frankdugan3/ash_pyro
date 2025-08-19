@@ -3,9 +3,10 @@ defmodule AshPyro.Extensions.Resource.Transformers.MergeFormActions do
 
   use AshPyro.Extensions.Resource.Transformers
 
-  alias AshPyro.Extensions.Resource.Form
+  alias Ash.Resource.Dsl
+  alias AshPyro.Extensions.Dsl.Form
 
-  @ash_resource_transformers Ash.Resource.Dsl.transformers()
+  @ash_resource_transformers Dsl.transformers()
 
   @impl true
   def after?(module) when module in @ash_resource_transformers, do: true
@@ -39,29 +40,20 @@ defmodule AshPyro.Extensions.Resource.Transformers.MergeFormActions do
           # TODO: Perhaps detect special forms of :destroy types that take arguments?
           |> Enum.map(& &1.name)
 
-        %{form_actions: form_actions, errors: errors} =
+        %{form_actions: form_actions, form_types: form_types, to_find: to_find} =
           form_entities
           |> Enum.reduce(
             %{
+              actions: actions,
+              exclusions: excluded_form_action_names,
               form_actions: [],
               form_types: %{},
-              to_find: expected_action_names,
-              exclusions: excluded_form_action_names,
-              actions: actions,
-              errors: []
+              to_find: expected_action_names
             },
             fn
               %Form.ActionType{name: names} = type, acc when is_list(names) ->
                 fields = merge_fields(type.fields)
-
-                Enum.reduce(names, acc, fn name, acc ->
-                  merge_action_type(
-                    acc,
-                    type
-                    |> Map.put(:name, name)
-                    |> Map.put(:fields, fields)
-                  )
-                end)
+                Enum.reduce(names, acc, &merge_action_type_with_name(&1, &2, type, fields))
 
               %Form.ActionType{} = type, acc ->
                 fields = merge_fields(type.fields)
@@ -69,15 +61,7 @@ defmodule AshPyro.Extensions.Resource.Transformers.MergeFormActions do
 
               %Form.Action{name: names} = action, acc when is_list(names) ->
                 fields = merge_fields(action.fields)
-
-                Enum.reduce(names, acc, fn name, acc ->
-                  merge_action(
-                    acc,
-                    action
-                    |> Map.put(:name, name)
-                    |> Map.put(:fields, fields)
-                  )
-                end)
+                Enum.reduce(names, acc, &merge_action_with_name(&1, &2, action, fields))
 
               %Form.Action{} = action, acc ->
                 fields = merge_fields(action.fields)
@@ -87,7 +71,8 @@ defmodule AshPyro.Extensions.Resource.Transformers.MergeFormActions do
                 acc
             end
           )
-          |> merge_defaults_from_types()
+
+        form_actions = merge_defaults_from_types(form_actions, to_find, actions, form_types)
 
         # truncate all Action/ActionType entities because they will be unrolled/defaulted
         dsl =
@@ -102,65 +87,52 @@ defmodule AshPyro.Extensions.Resource.Transformers.MergeFormActions do
             Transformer.add_entity(dsl, [:pyro, :form], form_action, prepend: true)
           end)
 
-        handle_errors(errors, "form", dsl)
+        {:ok, dsl}
     end
   end
 
-  defp merge_action_type(%{errors: errors} = acc, %{name: name})
-       when name not in [:create, :update, :destroy] do
-    errors = [
-      DslError.exception(
-        path: [:pyro, :form, :action_type],
-        message: """
-        unsupported action type: #{name}
-        """
-      )
-      | errors
-    ]
-
-    Map.put(acc, :errors, errors)
+  defp merge_action_type(_acc, %{name: name}) when name not in [:create, :update, :destroy] do
+    {:error,
+     DslError.exception(
+       path: [:pyro, :form, :action_type],
+       message: """
+       unsupported action type: #{name}
+       """
+     )}
+    |> raise_error()
   end
 
-  defp merge_action_type(%{form_types: %{create: _}, errors: errors} = acc, %{name: :create}) do
-    errors = [
-      DslError.exception(
-        path: [:pyro, :form, :action_type],
-        message: """
-        action type :create has already been defined
-        """
-      )
-      | errors
-    ]
-
-    Map.put(acc, :errors, errors)
+  defp merge_action_type(%{form_types: %{create: _}}, %{name: :create}) do
+    {:error,
+     DslError.exception(
+       path: [:pyro, :form, :action_type],
+       message: """
+       action type :create has already been defined
+       """
+     )}
+    |> raise_error()
   end
 
-  defp merge_action_type(%{form_types: %{update: _}, errors: errors} = acc, %{name: :update}) do
-    errors = [
-      DslError.exception(
-        path: [:pyro, :form, :action_type],
-        message: """
-        action type :update has already been defined
-        """
-      )
-      | errors
-    ]
-
-    Map.put(acc, :errors, errors)
+  defp merge_action_type(%{form_types: %{update: _}}, %{name: :update}) do
+    {:error,
+     DslError.exception(
+       path: [:pyro, :form, :action_type],
+       message: """
+       action type :update has already been defined
+       """
+     )}
+    |> raise_error()
   end
 
-  defp merge_action_type(%{form_types: %{destroy: _}, errors: errors} = acc, %{name: :destroy}) do
-    errors = [
-      DslError.exception(
-        path: [:pyro, :form, :action_type],
-        message: """
-        action type :destroy has already been defined
-        """
-      )
-      | errors
-    ]
-
-    Map.put(acc, :errors, errors)
+  defp merge_action_type(%{form_types: %{destroy: _}}, %{name: :destroy}) do
+    {:error,
+     DslError.exception(
+       path: [:pyro, :form, :action_type],
+       message: """
+       action type :destroy has already been defined
+       """
+     )}
+    |> raise_error()
   end
 
   defp merge_action_type(%{form_types: types} = acc, %{name: name} = type) do
@@ -168,25 +140,39 @@ defmodule AshPyro.Extensions.Resource.Transformers.MergeFormActions do
     Map.put(acc, :form_types, types)
   end
 
-  defp merge_action(%{errors: errors} = acc, %{name: name} = form_action) do
+  defp merge_action_with_name(name, acc, action, fields) do
+    merge_action(
+      acc,
+      action
+      |> Map.put(:name, name)
+      |> Map.put(:fields, fields)
+    )
+  end
+
+  defp merge_action_type_with_name(name, acc, type, fields) do
+    merge_action_type(
+      acc,
+      type
+      |> Map.put(:name, name)
+      |> Map.put(:fields, fields)
+    )
+  end
+
+  defp merge_action(acc, %{name: name} = form_action) do
     case validate_action_and_type(acc.actions, name) do
       {:error, error} ->
-        errors = [error | errors]
-        Map.put(acc, :errors, errors)
+        raise_error({:error, error})
 
       {:ok, action} ->
         if name in acc.exclusions do
-          errors = [
-            DslError.exception(
-              path: [:pyro, :form, :action],
-              message: """
-              action #{name} is listed in `exclude`
-              """
-            )
-            | errors
-          ]
-
-          Map.put(acc, :errors, errors)
+          {:error,
+           DslError.exception(
+             path: [:pyro, :form, :action],
+             message: """
+             action #{name} is listed in `exclude`
+             """
+           )}
+          |> raise_error()
         else
           form_action =
             form_action
@@ -230,38 +216,53 @@ defmodule AshPyro.Extensions.Resource.Transformers.MergeFormActions do
     end
   end
 
-  defp merge_defaults_from_types(%{to_find: []} = acc), do: acc
+  defp merge_defaults_from_types(form_actions, [], _actions, _form_types), do: form_actions
 
-  defp merge_defaults_from_types(acc) do
-    Enum.reduce(acc.to_find, acc, fn name, acc ->
-      case validate_action_and_type(acc.actions, name) do
-        {:error, error} ->
-          errors = [error | acc.errors]
-          Map.put(acc, :errors, errors)
+  defp merge_defaults_from_types(form_actions, to_find, actions, form_types) do
+    # actions is already a map from the transform function
 
-        {:ok, action} ->
-          type_default = Map.get(acc.form_types, action.type)
+    # Create an accumulator similar to the original logic but without error collection
+    acc = %{
+      form_actions: form_actions,
+      form_types: form_types,
+      to_find: to_find,
+      # exclusions were already filtered out earlier
+      exclusions: [],
+      actions: actions
+    }
 
-          if type_default == nil do
-            errors = [
-              DslError.exception(
-                path: [:pyro, :form],
-                message: """
-                form for action #{name} is not defined, has no type defaults, and is not excluded
-                """
-              )
-              | acc.errors
-            ]
+    final_acc = Enum.reduce(to_find, acc, &process_default_action/2)
+    final_acc.form_actions
+  end
 
-            Map.put(acc, :errors, errors)
-          else
-            merge_action(
-              acc,
-              Map.merge(%Form.Action{name: name}, Map.drop(type_default, [:__struct__, :name]))
-            )
-          end
-      end
-    end)
+  defp process_default_action(name, acc) do
+    case validate_action_and_type(acc.actions, name) do
+      {:error, error} ->
+        raise_error({:error, error})
+
+      {:ok, action} ->
+        handle_action_with_type_default(acc, name, action)
+    end
+  end
+
+  defp handle_action_with_type_default(acc, name, action) do
+    type_default = Map.get(acc.form_types, action.type)
+
+    if type_default == nil do
+      {:error,
+       DslError.exception(
+         path: [:pyro, :form],
+         message: """
+         form for action #{name} is not defined, has no type defaults, and is not excluded
+         """
+       )}
+      |> raise_error()
+    else
+      merge_action(
+        acc,
+        Map.merge(%Form.Action{name: name}, Map.drop(type_default, [:__struct__, :name]))
+      )
+    end
   end
 
   defp merge_fields(fields, path \\ []) do
@@ -280,6 +281,8 @@ defmodule AshPyro.Extensions.Resource.Transformers.MergeFormActions do
         |> Map.put(:fields, merge_fields(group.fields, path))
     end)
   end
+
+  defp raise_error({:error, exception}), do: raise(exception)
 
   defp maybe_append_path(root, nil), do: root
   defp maybe_append_path(root, []), do: root

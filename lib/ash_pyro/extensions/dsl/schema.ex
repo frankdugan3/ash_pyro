@@ -1,4 +1,4 @@
-defmodule AshPyro.Extensions.Resource.Schema do
+defmodule AshPyro.Extensions.Dsl.Schema do
   @moduledoc """
   Shared types for resource extension schemas.
   """

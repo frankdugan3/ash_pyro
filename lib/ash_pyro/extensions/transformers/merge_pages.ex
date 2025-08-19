@@ -3,14 +3,17 @@ defmodule AshPyro.Extensions.Resource.Transformers.MergePages do
 
   use AshPyro.Extensions.Resource.Transformers
 
-  alias AshPyro.Extensions.Resource.LiveView.Page
+  alias Ash.Resource.Dsl
+  alias AshPyro.Extensions.Dsl.LiveView.Page
+  alias AshPyro.Extensions.Resource.Transformers.MergeDataTableActions
+  alias AshPyro.Extensions.Resource.Transformers.MergeFormActions
 
   require Logger
 
-  @dependant_transformers Ash.Resource.Dsl.transformers() ++
+  @dependant_transformers Dsl.transformers() ++
                             [
-                              AshPyro.Extensions.Resource.Transformers.MergeFormActions,
-                              AshPyro.Extensions.Resource.Transformers.MergeDataTableActions
+                              MergeFormActions,
+                              MergeDataTableActions
                               # AshPyro.Extensions.Resource.Transformers.MergeCardGridActions
                             ]
 
@@ -21,27 +24,25 @@ defmodule AshPyro.Extensions.Resource.Transformers.MergePages do
 
   @impl true
   def transform(dsl) do
-    errors = []
-
     case Transformer.get_entities(dsl, [:pyro, :live_view]) do
       [] ->
         {:ok, dsl}
 
       page_entities ->
-        {dsl, errors} = Enum.reduce(page_entities, {dsl, errors}, &merge_page/2)
+        dsl =
+          Enum.reduce(page_entities, dsl, fn page_entity, dsl ->
+            merge_page(page_entity, dsl)
+          end)
 
-        handle_errors(errors, "live view pages", dsl)
+        {:ok, dsl}
     end
   end
 
-  defp merge_page(%Page{route_helper: nil, name: name} = page, acc) do
-    merge_page(%{page | route_helper: String.to_atom("#{name}_path")}, acc)
+  defp merge_page(%Page{name: name, route_helper: nil} = page, dsl) do
+    merge_page(%{page | route_helper: String.to_atom("#{name}_path")}, dsl)
   end
 
-  defp merge_page(
-         %Page{view_as: :list_and_modal, live_actions: live_actions} = page,
-         {dsl, errors}
-       ) do
+  defp merge_page(%Page{live_actions: live_actions, view_as: :list_and_modal} = page, dsl) do
     live_action_types =
       live_actions
       |> Enum.map(&expand_live_action_defaults(&1, dsl))
@@ -58,7 +59,7 @@ defmodule AshPyro.Extensions.Resource.Transformers.MergePages do
             live_action = String.to_atom("#{list.live_action}_#{show.live_action}")
 
             [
-              %{show | path: path, live_action: live_action, parent_action: list.live_action}
+              %{show | live_action: live_action, parent_action: list.live_action, path: path}
               | acc
             ]
           end)
@@ -71,7 +72,7 @@ defmodule AshPyro.Extensions.Resource.Transformers.MergePages do
             live_action = String.to_atom("#{list.live_action}_#{update.live_action}")
 
             [
-              %{update | path: path, live_action: live_action, parent_action: list.live_action}
+              %{update | live_action: live_action, parent_action: list.live_action, path: path}
               | acc
             ]
           end)
@@ -82,13 +83,13 @@ defmodule AshPyro.Extensions.Resource.Transformers.MergePages do
             live_action = String.to_atom("#{list.live_action}_#{create.live_action}")
 
             [
-              %{create | path: path, live_action: live_action, parent_action: list.live_action}
+              %{create | live_action: live_action, parent_action: list.live_action, path: path}
               | acc
             ]
           end)
 
         [
-          %{list | path: build_path([page.path, list.path]), parent_action: list.live_action}
+          %{list | parent_action: list.live_action, path: build_path([page.path, list.path])}
           | acc
         ]
       end)
@@ -97,13 +98,10 @@ defmodule AshPyro.Extensions.Resource.Transformers.MergePages do
     page = %{page | live_actions: live_actions}
     dsl = Transformer.replace_entity(dsl, [:pyro, :live_view], page)
 
-    {dsl, errors}
+    dsl
   end
 
-  defp merge_page(
-         %Page{view_as: :show_and_modal, live_actions: live_actions} = page,
-         {dsl, errors}
-       ) do
+  defp merge_page(%Page{live_actions: live_actions, view_as: :show_and_modal} = page, dsl) do
     live_action_types =
       live_actions
       |> Enum.map(&expand_live_action_defaults(&1, dsl))
@@ -125,7 +123,7 @@ defmodule AshPyro.Extensions.Resource.Transformers.MergePages do
             live_action = String.to_atom("#{show.live_action}_#{action.live_action}")
 
             [
-              %{action | path: path, live_action: live_action, parent_action: show.live_action}
+              %{action | live_action: live_action, parent_action: show.live_action, path: path}
               | acc
             ]
           end)
@@ -144,7 +142,7 @@ defmodule AshPyro.Extensions.Resource.Transformers.MergePages do
             live_action = String.to_atom("#{show.live_action}_#{update.live_action}")
 
             [
-              %{update | path: path, live_action: live_action, parent_action: show.live_action}
+              %{update | live_action: live_action, parent_action: show.live_action, path: path}
               | acc
             ]
           end)
@@ -152,8 +150,8 @@ defmodule AshPyro.Extensions.Resource.Transformers.MergePages do
         [
           %{
             show
-            | path: build_path([page.path, show_identity, show.path]),
-              parent_action: show.live_action
+            | parent_action: show.live_action,
+              path: build_path([page.path, show_identity, show.path])
           }
           | acc
         ]
@@ -163,10 +161,10 @@ defmodule AshPyro.Extensions.Resource.Transformers.MergePages do
     page = %{page | live_actions: live_actions}
     dsl = Transformer.replace_entity(dsl, [:pyro, :live_view], page)
 
-    {dsl, errors}
+    dsl
   end
 
-  defp merge_page(%Page{view_as: :individual, live_actions: live_actions} = page, {dsl, errors}) do
+  defp merge_page(%Page{live_actions: live_actions, view_as: :individual} = page, dsl) do
     live_actions =
       live_actions
       |> Enum.map(&expand_live_action_defaults(&1, dsl))
@@ -190,7 +188,7 @@ defmodule AshPyro.Extensions.Resource.Transformers.MergePages do
     page = %{page | live_actions: live_actions}
     dsl = Transformer.replace_entity(dsl, [:pyro, :live_view], page)
 
-    {dsl, errors}
+    dsl
   end
 
   defp build_path(path) do
@@ -225,7 +223,7 @@ defmodule AshPyro.Extensions.Resource.Transformers.MergePages do
     expand_live_action_defaults(case_result, dsl)
   end
 
-  defp expand_live_action_defaults(%Page.List{pagination: nil, action: action} = live_action, dsl) do
+  defp expand_live_action_defaults(%Page.List{action: action, pagination: nil} = live_action, dsl) do
     case_result =
       case dsl |> filter_actions(&(&1.type == :read && &1.name == action)) |> List.first() do
         %{pagination: %{offset?: true}} ->
@@ -241,10 +239,10 @@ defmodule AshPyro.Extensions.Resource.Transformers.MergePages do
     expand_live_action_defaults(case_result, dsl)
   end
 
-  defp expand_live_action_defaults(%Page.List{count?: nil, action: action} = live_action, dsl) do
+  defp expand_live_action_defaults(%Page.List{action: action, count?: nil} = live_action, dsl) do
     case_result =
       case dsl |> filter_actions(&(&1.type == :read && &1.name == action)) |> List.first() do
-        %{pagination: %{offset?: true, countable: true}} ->
+        %{pagination: %{countable: true, offset?: true}} ->
           %{live_action | count?: true}
 
         _ ->
@@ -256,7 +254,7 @@ defmodule AshPyro.Extensions.Resource.Transformers.MergePages do
 
   # TODO: Check
   defp expand_live_action_defaults(
-         %Page.List{default_limit: nil, action: action} = live_action,
+         %Page.List{action: action, default_limit: nil} = live_action,
          dsl
        ) do
     case_result =
@@ -287,7 +285,7 @@ defmodule AshPyro.Extensions.Resource.Transformers.MergePages do
     expand_live_action_defaults(%{live_action | label: label}, dsl)
   end
 
-  defp expand_live_action_defaults(%{live_action: name, label: nil} = live_action, dsl) do
+  defp expand_live_action_defaults(%{label: nil, live_action: name} = live_action, dsl) do
     expand_live_action_defaults(%{live_action | label: default_label(name)}, dsl)
   end
 
@@ -301,7 +299,7 @@ defmodule AshPyro.Extensions.Resource.Transformers.MergePages do
   defp expand_live_action_defaults(live_action, _dsl), do: live_action
 
   defp partition_live_actions(live_actions) do
-    Enum.reduce(live_actions, %{list: [], show: [], create: [], update: []}, fn
+    Enum.reduce(live_actions, %{create: [], list: [], show: [], update: []}, fn
       %Page.List{} = action, acc ->
         %{acc | list: [action | acc.list]}
 

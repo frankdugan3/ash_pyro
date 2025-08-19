@@ -1,4 +1,4 @@
-defmodule AshPyro.Extensions.Resource.DataTable.Column do
+defmodule AshPyro.Extensions.Dsl.DataTable.Column do
   @moduledoc ~s'''
   The configuration of a data table column in the `AshPyro.Extensions.Resource` extension.
 
@@ -20,7 +20,9 @@ defmodule AshPyro.Extensions.Resource.DataTable.Column do
   ```
   '''
 
-  use AshPyro.Extensions.Resource.Schema
+  use AshPyro.Extensions.Dsl.Schema
+
+  alias Spark.Dsl.Entity
 
   defstruct [
     :cell_class,
@@ -30,9 +32,9 @@ defmodule AshPyro.Extensions.Resource.DataTable.Column do
     :name,
     :path,
     :render_cell,
+    :resource_field_type,
     :sortable?,
-    :type,
-    :resource_field_type
+    :type
   ]
 
   @type t :: %__MODULE__{
@@ -43,8 +45,6 @@ defmodule AshPyro.Extensions.Resource.DataTable.Column do
           name: atom(),
           path: binary(),
           render_cell: (map() -> binary()),
-          sortable?: boolean(),
-          type: :default,
           resource_field_type:
             :attribute
             | :calculation
@@ -52,8 +52,11 @@ defmodule AshPyro.Extensions.Resource.DataTable.Column do
             | :has_one
             | :belongs_to
             | :has_many
-            | :many_to_many
+            | :many_to_many,
+          sortable?: boolean(),
+          type: :default
         }
+
   @schema [
     cell_class: [type: css_class_schema_type(), required: false, doc: "Customize cell class."],
     class: [type: css_class_schema_type(), required: false, doc: "Customize header class."],
@@ -89,10 +92,19 @@ defmodule AshPyro.Extensions.Resource.DataTable.Column do
     ]
   ]
 
-  def render_cell(%{row: row, col: %{type: :default, name: name}}) do
-    Map.get(row, name)
-  end
+  @entity %Entity{
+    args: [:name],
+    describe:
+      "Declare non-default behavior for a specific data table column in the `AshPyro.Extensions.Dsl` extension.",
+    name: :column,
+    schema: @schema,
+    target: __MODULE__
+  }
 
   @doc false
-  def schema, do: @schema
+  def entity, do: @entity
+
+  def render_cell(%{col: %{name: name, type: :default}, row: row}) do
+    Map.get(row, name)
+  end
 end

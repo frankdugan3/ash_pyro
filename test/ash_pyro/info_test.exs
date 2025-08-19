@@ -1,18 +1,24 @@
-defmodule AshPyro.Extensions.Resource.InfoTest do
+defmodule AshPyro.InfoTest do
   @moduledoc false
   use ExUnit.Case, async: true
 
+  alias Ash.DataLayer.Ets
+  alias Ash.Notifier.PubSub
+  alias AshPyro.Extensions.Resource
+
   require Ash.Query
 
-  doctest AshPyro.Extensions.Resource.Info, import: true
+  doctest AshPyro.Info, import: true
 
   defmodule User do
     @moduledoc false
     use Ash.Resource,
-      data_layer: Ash.DataLayer.Ets,
-      extensions: [AshPyro.Extensions.Resource],
-      notifiers: [Ash.Notifier.PubSub],
-      domain: AshPyro.Extensions.Resource.InfoTest.Domain
+      data_layer: Ets,
+      extensions: [Resource],
+      notifiers: [PubSub],
+      domain: AshPyro.InfoTest.Domain
+
+    alias AshPyro.InfoTest.Domain
 
     require Ash.Query
 
@@ -82,14 +88,6 @@ defmodule AshPyro.Extensions.Resource.InfoTest do
       end
     end
 
-    # pub_sub do
-    #   prefix "user"
-
-    #   publish_all :create, "created"
-    #   publish_all :update, ["updated", [:id, nil]]
-    #   publish_all :destroy, ["destroyed", [:id, nil]]
-    # end
-
     attributes do
       uuid_primary_key :id
       attribute :name, :string, allow_nil?: false, public?: true
@@ -116,7 +114,7 @@ defmodule AshPyro.Extensions.Resource.InfoTest do
     end
 
     relationships do
-      belongs_to :best_friend, __MODULE__
+      belongs_to :best_friend, __MODULE__, domain: Domain
     end
 
     calculations do
@@ -141,10 +139,10 @@ defmodule AshPyro.Extensions.Resource.InfoTest do
 
           query
           |> Ash.Query.filter(
-            if ^search_string != "" do
-              contains(name_email, ^search_string)
-            else
+            if ^search_string == "" do
               true
+            else
+              contains(name_email, ^search_string)
             end
           )
           |> Ash.Query.load(:name_email)

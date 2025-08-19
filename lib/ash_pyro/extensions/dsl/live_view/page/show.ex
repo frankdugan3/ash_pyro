@@ -1,9 +1,11 @@
-defmodule AshPyro.Extensions.Resource.LiveView.Page.Show do
+defmodule AshPyro.Extensions.Dsl.LiveView.Page.Show do
   @moduledoc """
   A show type live_action for a LiveView page.
   """
 
-  use AshPyro.Extensions.Resource.Schema
+  use AshPyro.Extensions.Dsl.Schema
+
+  alias Spark.Dsl.Entity
 
   @type t :: %__MODULE__{}
   defstruct [
@@ -77,6 +79,14 @@ defmodule AshPyro.Extensions.Resource.LiveView.Page.Show do
     ]
   ]
 
+  @entity %Entity{
+    args: [:path, :live_action, :action],
+    describe: "Configure a show action for this resource.",
+    name: :show,
+    schema: @schema,
+    target: __MODULE__
+  }
+
   @doc false
-  def schema, do: @schema
+  def entity, do: @entity
 end

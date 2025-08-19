@@ -87,7 +87,7 @@ defmodule AshPyro.Enum do
     string
     |> String.split()
     |> Enum.reduce([], fn value, acc ->
-      case apply(module, :match, [value]) do
+      case module.match(value) do
         {:ok, enum} ->
           deduplicate_enum(acc, enum, caller)
 
@@ -108,72 +108,81 @@ defmodule AshPyro.Enum do
     do: cast_enum_type(enums, [?a], caller, sigil_name)
 
   defp cast_enum_type(enums, modifiers, caller, sigil_name) do
-    {type, list?} =
-      Enum.reduce(modifiers, {nil, false}, fn
-        mod, {nil, list?} when mod in [?a, ?s, ?h, ?o] ->
-          {mod, list?}
+    {type, list?} = parse_modifiers(modifiers, caller, sigil_name)
+    transformed_enums = transform_enums(enums, type)
+    format_result(transformed_enums, type, list?, caller, sigil_name)
+  end
 
-        mod, {old, _} when mod in [?a, ?s, ?h, ?o] ->
-          stacktrace = Macro.Env.stacktrace(caller)
+  defp parse_modifiers(modifiers, caller, sigil_name) do
+    Enum.reduce(modifiers, {nil, false}, fn
+      mod, {nil, list?} when mod in [?a, ?s, ?h, ?o] ->
+        {mod, list?}
 
-          reraise(
-            ArgumentError,
-            [
-              message:
-                "sigil ~#{sigil_name} can only take one type mod, you tried both #{old} and #{mod}"
-            ],
-            stacktrace
-          )
+      mod, {old, _} when mod in [?a, ?s, ?h, ?o] ->
+        raise_modifier_conflict(caller, sigil_name, old, mod)
 
-        ?l, {old, _} ->
-          {old, true}
+      ?l, {old, _} ->
+        {old, true}
 
-        mod, _acc ->
-          stacktrace = Macro.Env.stacktrace(caller)
+      mod, _acc ->
+        raise_unknown_modifier(caller, sigil_name, mod)
+    end)
+  end
 
-          reraise(
-            ArgumentError,
-            [message: "unknown modifier \"#{mod}\" passed to sigil ~#{sigil_name}"],
-            stacktrace
-          )
-      end)
-
-    enums =
-      case type do
-        ?a -> enums
-        ?s -> Enum.map(enums, &Atom.to_string/1)
-        ?h -> Enum.map(enums, &humanize_enum/1)
-        ?o -> Enum.map(enums, &{humanize_enum(&1), &1})
-        _ -> enums
-      end
-
-    cond do
-      !list? && type == ?h ->
-        Enum.join(enums, ", ")
-
-      list? && type == ?h ->
-        enums
-
-      list? ->
-        enums
-
-      !list? && length(enums) == 1 ->
-        [enum | _] = enums
-        enum
-
-      true ->
-        [_enum | _] = enums
-        stacktrace = Macro.Env.stacktrace(caller)
-
-        reraise(
-          ArgumentError,
-          [
-            message:
-              "you provided more than one enum, but did not specify you wanted a list with the \"l\" modifier"
-          ],
-          stacktrace
-        )
+  defp transform_enums(enums, type) do
+    case type do
+      ?a -> enums
+      ?s -> Enum.map(enums, &Atom.to_string/1)
+      ?h -> Enum.map(enums, &humanize_enum/1)
+      ?o -> Enum.map(enums, &{humanize_enum(&1), &1})
+      _ -> enums
     end
+  end
+
+  defp format_result(enums, type, list?, caller, _sigil_name) do
+    cond do
+      !list? && type == ?h -> Enum.join(enums, ", ")
+      list? && type == ?h -> enums
+      list? -> enums
+      !list? && length(enums) == 1 -> hd(enums)
+      true -> raise_multiple_enums_error(caller)
+    end
+  end
+
+  defp raise_modifier_conflict(caller, sigil_name, old, mod) do
+    stacktrace = Macro.Env.stacktrace(caller)
+
+    reraise(
+      ArgumentError,
+      [
+        message:
+          "sigil ~#{sigil_name} can only take one type mod, you tried both #{old} and #{mod}"
+      ],
+      stacktrace
+    )
+  end
+
+  defp raise_unknown_modifier(caller, sigil_name, mod) do
+    stacktrace = Macro.Env.stacktrace(caller)
+
+    reraise(
+      ArgumentError,
+      [message: "unknown modifier \"#{mod}\" passed to sigil ~#{sigil_name}"],
+      stacktrace
+    )
+  end
+
+  defp raise_multiple_enums_error(caller) do
+    stacktrace = Macro.Env.stacktrace(caller)
+
+    reraise(
+      ArgumentError,
+      [
+        message:
+          "you provided more than one enum, but did not specify you wanted a list with the \"l\" modifier"
+      ],
+      stacktrace
+    )
   end
 
   defp deduplicate_enum(enums, enum, caller) do

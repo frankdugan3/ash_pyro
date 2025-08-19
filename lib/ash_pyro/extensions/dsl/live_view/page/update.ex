@@ -1,9 +1,11 @@
-defmodule AshPyro.Extensions.Resource.LiveView.Page.Update do
+defmodule AshPyro.Extensions.Dsl.LiveView.Page.Update do
   @moduledoc """
   An update type live_action for a LiveView page.
   """
 
-  use AshPyro.Extensions.Resource.Schema
+  use AshPyro.Extensions.Dsl.Schema
+
+  alias Spark.Dsl.Entity
 
   @type t :: %__MODULE__{}
   defstruct [
@@ -83,6 +85,14 @@ defmodule AshPyro.Extensions.Resource.LiveView.Page.Update do
     ]
   ]
 
+  @entity %Entity{
+    args: [:path, :live_action, :action],
+    describe: "Configure a update action for this resource.",
+    name: :update,
+    schema: @schema,
+    target: __MODULE__
+  }
+
   @doc false
-  def schema, do: @schema
+  def entity, do: @entity
 end

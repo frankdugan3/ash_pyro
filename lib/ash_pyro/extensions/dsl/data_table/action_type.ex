@@ -1,17 +1,21 @@
-defmodule AshPyro.Extensions.Resource.DataTable.ActionType do
+defmodule AshPyro.Extensions.Dsl.DataTable.ActionType do
   @moduledoc """
   A data table for action(s) of a given type in the `AshPyro.Extensions.Resource` extension.
   """
-  use AshPyro.Extensions.Resource.Schema
+  use AshPyro.Extensions.Dsl.Schema
+
+  alias AshPyro.Extensions.Dsl.DataTable.Column
+  alias Spark.Dsl.Entity
 
   @type t :: %__MODULE__{
           class: Schema.css_class(),
-          columns: [AshPyro.Extensions.Resource.DataTable.Column],
+          columns: [Column],
           default_display: [atom()],
           default_sort: Schema.sort(),
           exclude: [atom()],
           name: atom()
         }
+
   defstruct [
     :class,
     :columns,
@@ -60,6 +64,18 @@ defmodule AshPyro.Extensions.Resource.DataTable.ActionType do
     ]
   ]
 
+  @entity %Entity{
+    args: [:name],
+    describe:
+      "Configure the default data table appearance for actions of type(s). Will be ignored by actions configured explicitly.",
+    entities: [
+      columns: [Column.entity()]
+    ],
+    name: :action_type,
+    schema: @schema,
+    target: __MODULE__
+  }
+
   @doc false
-  def schema, do: @schema
+  def entity, do: @entity
 end

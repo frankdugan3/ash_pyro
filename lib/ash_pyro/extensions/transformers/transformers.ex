@@ -3,6 +3,13 @@ defmodule AshPyro.Extensions.Resource.Transformers do
   Tooling for Ash resource transformation.
   """
 
+  alias Ash.Resource.Aggregate
+  alias Ash.Resource.Attribute
+  alias Ash.Resource.Calculation
+  alias Ash.Resource.Relationships.BelongsTo
+  alias Ash.Resource.Relationships.HasMany
+  alias Ash.Resource.Relationships.HasOne
+  alias Ash.Resource.Relationships.ManyToMany
   alias Spark.Dsl.Transformer
 
   @doc """
@@ -13,13 +20,13 @@ defmodule AshPyro.Extensions.Resource.Transformers do
     |> Enum.flat_map(&Transformer.get_entities(dsl, [&1]))
     |> Enum.find(&(&1.name == field_name))
     |> case do
-      %Ash.Resource.Attribute{} -> :attribute
-      %Ash.Resource.Aggregate{} -> :aggregate
-      %Ash.Resource.Calculation{} -> :calculation
-      %Ash.Resource.Relationships.HasOne{} -> :has_one
-      %Ash.Resource.Relationships.BelongsTo{} -> :belongs_to
-      %Ash.Resource.Relationships.HasMany{} -> :has_many
-      %Ash.Resource.Relationships.ManyToMany{} -> :many_to_many
+      %Attribute{} -> :attribute
+      %Aggregate{} -> :aggregate
+      %Calculation{} -> :calculation
+      %HasOne{} -> :has_one
+      %BelongsTo{} -> :belongs_to
+      %HasMany{} -> :has_many
+      %ManyToMany{} -> :many_to_many
     end
   end
 
@@ -62,38 +69,6 @@ defmodule AshPyro.Extensions.Resource.Transformers do
   def inherit_pyro_config(dsl, kind, entity_name, key, default)
       when kind in [:card, :card_grid] do
     inherit_pyro_config(dsl, [:pyro, :card_grid], entity_name, key, default)
-  end
-
-  @doc """
-  Collect all accumulated errors and log raise them all at once.
-  """
-  def handle_errors(errors, label, dsl \\ nil) do
-    case errors do
-      [] ->
-        if dsl do
-          {:ok, dsl}
-        else
-          :ok
-        end
-
-      [error] ->
-        {:error, error}
-
-      errors ->
-        list =
-          errors
-          |> Enum.reverse()
-          |> Enum.map_join("\n", &("   - " <> &1.message))
-
-        {:error,
-         Spark.Error.DslError.exception(
-           path: [:pyro, :data_table],
-           message: """
-           There are multiple errors with the #{label}:
-           #{list}
-           """
-         )}
-    end
   end
 
   @doc """

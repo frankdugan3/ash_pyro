@@ -1,45 +1,47 @@
-defmodule AshPyro.Extensions.Resource.Form.Field do
+defmodule AshPyro.Extensions.Dsl.Form.Field do
   @moduledoc """
   The configuration of a form field in the `AshPyro.Extensions.Resource` extension.
   """
 
-  use AshPyro.Extensions.Resource.Schema
+  use AshPyro.Extensions.Dsl.Schema
+
+  alias Spark.Dsl.Entity
 
   defstruct [
-    :name,
-    :type,
-    :options,
-    :label,
-    :description,
-    :path,
-    :class,
-    :input_class,
-    :autofocus,
-    :prompt,
+    :autocomplete_option_label_key,
+    :autocomplete_option_value_key,
     :autocomplete_search_action,
     :autocomplete_search_arg,
-    :autocomplete_option_label_key,
-    :autocomplete_option_value_key
+    :autofocus,
+    :class,
+    :description,
+    :input_class,
+    :label,
+    :name,
+    :options,
+    :path,
+    :prompt,
+    :type
   ]
 
   @type field_type ::
           :default | :long_text | :short_text | :autocomplete | :select | :nested_form
 
   @type t :: %__MODULE__{
-          name: atom(),
-          type: field_type(),
-          options: list(),
-          label: String.t(),
-          description: String.t(),
-          path: [atom()],
-          class: String.t(),
-          input_class: String.t(),
-          autofocus: boolean(),
-          prompt: String.t(),
+          autocomplete_option_label_key: atom(),
+          autocomplete_option_value_key: atom(),
           autocomplete_search_action: atom(),
           autocomplete_search_arg: atom(),
-          autocomplete_option_label_key: atom(),
-          autocomplete_option_value_key: atom()
+          autofocus: boolean(),
+          class: String.t(),
+          description: String.t(),
+          input_class: String.t(),
+          label: String.t(),
+          name: atom(),
+          options: list(),
+          path: [atom()],
+          prompt: String.t(),
+          type: field_type()
         }
 
   @schema [
@@ -120,6 +122,15 @@ defmodule AshPyro.Extensions.Resource.Form.Field do
     ]
   ]
 
+  @entity %Entity{
+    args: [:name],
+    describe:
+      "Declare non-default behavior for a specific form field in the `AshPyro.Extensions.Dsl` extension.",
+    name: :field,
+    schema: @schema,
+    target: __MODULE__
+  }
+
   @doc false
-  def schema, do: @schema
+  def entity, do: @entity
 end

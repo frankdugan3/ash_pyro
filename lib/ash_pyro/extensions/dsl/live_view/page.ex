@@ -1,8 +1,10 @@
-defmodule AshPyro.Extensions.Resource.LiveView.Page do
+defmodule AshPyro.Extensions.Dsl.LiveView.Page do
   @moduledoc """
   A LiveView page.
   """
-  use AshPyro.Extensions.Resource.Schema
+  use AshPyro.Extensions.Dsl.Schema
+
+  alias Spark.Dsl.Entity
 
   @type t :: %__MODULE__{
           __identifier__: any(),
@@ -71,6 +73,22 @@ defmodule AshPyro.Extensions.Resource.LiveView.Page do
     ]
   ]
 
+  @entity %Entity{
+    args: [:path, :name],
+    describe: "Configure a page for this resource.",
+    entities: [
+      live_actions: [
+        __MODULE__.Create.entity(),
+        __MODULE__.List.entity(),
+        __MODULE__.Show.entity(),
+        __MODULE__.Update.entity()
+      ]
+    ],
+    identifier: :name,
+    name: :page,
+    schema: @schema,
+    target: __MODULE__
+  }
   @doc false
-  def schema, do: @schema
+  def entity, do: @entity
 end
