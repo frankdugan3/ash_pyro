@@ -1,8 +1,5 @@
-defmodule AshPyro.Extensions.Resource.Transformers do
-  @moduledoc """
-  Tooling for Ash resource transformation.
-  """
-
+defmodule AshPyro.Extensions.Transformers do
+  @moduledoc false
   alias Ash.Resource.Aggregate
   alias Ash.Resource.Attribute
   alias Ash.Resource.Calculation

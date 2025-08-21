@@ -2,7 +2,7 @@ defmodule AshPyro.MixProject do
   @moduledoc false
   use Mix.Project
 
-  alias AshPyro.Extensions.Resource
+  alias AshPyro.Extensions.Dsl
 
   @source_url "https://github.com/frankdugan3/ash_pyro"
   @version "0.2.1"
@@ -82,7 +82,7 @@ defmodule AshPyro.MixProject do
         Macros: &(&1[:type] == :macro)
       ],
       nest_modules_by_prefix: [
-        Resource
+        Dsl
       ]
     ]
   end
@@ -103,10 +103,15 @@ defmodule AshPyro.MixProject do
     [
       Core: [
         AshPyro,
-        AshPyro.Helpers
+        AshPyro.Enum,
+        AshPyro.Helpers,
+        AshPyro.Info
       ],
-      "Ash Resource Extension": [
+      Extensions: [
         ~r/AshPyro.Extensions.Resource/
+      ],
+      "DSL Schema": [
+        ~r/AshPyro.Extensions.Dsl/
       ]
     ]
   end

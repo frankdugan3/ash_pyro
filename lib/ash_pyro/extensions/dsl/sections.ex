@@ -10,8 +10,8 @@ defmodule AshPyro.Extensions.Dsl.Sections do
       describe:
         "Configure the appearance of data tables in the `AshPyro.Extensions.Dsl` extension.",
       entities: [
-        DataTable.Action.entity(),
-        DataTable.ActionType.entity()
+        DataTable.Action.__entity__(),
+        DataTable.ActionType.__entity__()
       ],
       name: :data_table,
       schema: [
@@ -26,8 +26,8 @@ defmodule AshPyro.Extensions.Dsl.Sections do
     %Section{
       describe: "Configure the appearance of forms in the `AshPyro.Extensions.Dsl` extension.",
       entities: [
-        Form.Action.entity(),
-        Form.ActionType.entity()
+        Form.Action.__entity__(),
+        Form.ActionType.__entity__()
       ],
       name: :form,
       schema: [
@@ -41,7 +41,7 @@ defmodule AshPyro.Extensions.Dsl.Sections do
     },
     %Section{
       describe: "Configure LiveViews in the `AshPyro.Extensions.Dsl` extension.",
-      entities: [Page.entity()],
+      entities: [Page.__entity__()],
       name: :live_view,
       schema: []
     }

@@ -1,12 +1,12 @@
-defmodule AshPyro.Extensions.Resource.Transformers.MergePages do
+defmodule AshPyro.Extensions.Transformers.MergePages do
   @moduledoc false
 
-  use AshPyro.Extensions.Resource.Transformers
+  use AshPyro.Extensions.Transformers
 
   alias Ash.Resource.Dsl
   alias AshPyro.Extensions.Dsl.LiveView.Page
-  alias AshPyro.Extensions.Resource.Transformers.MergeDataTableActions
-  alias AshPyro.Extensions.Resource.Transformers.MergeFormActions
+  alias AshPyro.Extensions.Transformers.MergeDataTableActions
+  alias AshPyro.Extensions.Transformers.MergeFormActions
 
   require Logger
 
@@ -14,7 +14,7 @@ defmodule AshPyro.Extensions.Resource.Transformers.MergePages do
                             [
                               MergeFormActions,
                               MergeDataTableActions
-                              # AshPyro.Extensions.Resource.Transformers.MergeCardGridActions
+                              # AshPyro.Extensions.Transformers.MergeCardGridActions
                             ]
 
   @impl true

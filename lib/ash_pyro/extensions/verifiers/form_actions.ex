@@ -1,7 +1,7 @@
-defmodule AshPyro.Extensions.Resource.Verifiers.FormActions do
+defmodule AshPyro.Extensions.Verifiers.FormActions do
   @moduledoc false
 
-  use AshPyro.Extensions.Resource.Verifiers
+  use AshPyro.Extensions.Verifiers
 
   alias AshPyro.Extensions.Dsl.Form
 

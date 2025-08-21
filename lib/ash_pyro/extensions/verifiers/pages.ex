@@ -1,7 +1,7 @@
-defmodule AshPyro.Extensions.Resource.Verifiers.Pages do
+defmodule AshPyro.Extensions.Verifiers.Pages do
   @moduledoc false
 
-  use AshPyro.Extensions.Resource.Verifiers
+  use AshPyro.Extensions.Verifiers
 
   # alias AshPyro.Extensions.Resource.Pages
   # alias Spark.Dsl.Extension

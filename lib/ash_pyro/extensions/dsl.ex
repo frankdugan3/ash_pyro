@@ -17,13 +17,13 @@ defmodule AshPyro.Extensions.Dsl do
       }
     ],
     transformers: [
-      AshPyro.Extensions.Resource.Transformers.MergeDataTableActions,
-      AshPyro.Extensions.Resource.Transformers.MergeFormActions,
-      AshPyro.Extensions.Resource.Transformers.MergePages
+      AshPyro.Extensions.Transformers.MergeDataTableActions,
+      AshPyro.Extensions.Transformers.MergeFormActions,
+      AshPyro.Extensions.Transformers.MergePages
     ],
     verifiers: [
-      # AshPyro.Extensions.Resource.Verifiers.DataTableActions
-      # AshPyro.Extensions.Resource.Verifiers.FormActions
-      # AshPyro.Extensions.Resource.Verifiers.Pages
+      # AshPyro.Extensions.Verifiers.DataTableActions
+      # AshPyro.Extensions.Verifiers.FormActions
+      # AshPyro.Extensions.Verifiers.Pages
     ]
 end

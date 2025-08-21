@@ -20,89 +20,59 @@ defmodule AshPyro.Extensions.Dsl.DataTable.Column do
   ```
   '''
 
-  use AshPyro.Extensions.Dsl.Schema
-
-  alias Spark.Dsl.Entity
-
-  defstruct [
-    :cell_class,
-    :class,
-    :description,
-    :label,
-    :name,
-    :path,
-    :render_cell,
-    :resource_field_type,
-    :sortable?,
-    :type
-  ]
-
-  @type t :: %__MODULE__{
-          cell_class: Schema.css_class(),
-          class: Schema.css_class(),
-          description: binary(),
-          label: binary(),
-          name: atom(),
-          path: binary(),
-          render_cell: (map() -> binary()),
-          resource_field_type:
-            :attribute
-            | :calculation
-            | :aggregate
-            | :has_one
-            | :belongs_to
-            | :has_many
-            | :many_to_many,
-          sortable?: boolean(),
-          type: :default
-        }
-
-  @schema [
-    cell_class: [type: css_class_schema_type(), required: false, doc: "Customize cell class."],
-    class: [type: css_class_schema_type(), required: false, doc: "Customize header class."],
-    description: [
-      type: :string,
-      required: false,
-      doc: "Override the default extracted description."
-    ],
-    label: [
-      type: :string,
-      required: false,
-      doc: "The label of the column (defaults to capitalized name)."
-    ],
-    name: [type: :atom, required: true, doc: "The name of the column."],
-    path: [
-      type: {:list, :atom},
-      required: false,
-      doc: "Append to the root path (nested paths are appended)."
-    ],
-    render_cell: [type: {:fun, 1}, default: &__MODULE__.render_cell/1],
-    sortable?: [
-      type: :boolean,
-      required: false,
-      default: true,
-      doc:
-        "Set to false to disable sorting. Note: If it it is not technically sortable, it will automatically be set to false."
-    ],
-    type: [
-      type: {:in, [:default]},
-      required: false,
-      doc: "The type of the the column.",
-      default: :default
-    ]
-  ]
-
-  @entity %Entity{
+  use AshPyro.Extensions.Dsl.Entity,
     args: [:name],
     describe:
       "Declare non-default behavior for a specific data table column in the `AshPyro.Extensions.Dsl` extension.",
     name: :column,
-    schema: @schema,
-    target: __MODULE__
-  }
-
-  @doc false
-  def entity, do: @entity
+    schema: [
+      cell_class: [type: :css_class, required: false, doc: "Customize cell class."],
+      class: [type: :css_class, required: false, doc: "Customize header class."],
+      description: [
+        type: :string,
+        required: false,
+        doc: "Override the default extracted description."
+      ],
+      label: [
+        type: :string,
+        required: false,
+        doc: "The label of the column (defaults to capitalized name)."
+      ],
+      name: [type: :atom, required: true, doc: "The name of the column."],
+      path: [
+        type: {:list, :atom},
+        required: false,
+        doc: "Append to the root path (nested paths are appended)."
+      ],
+      render_cell: [type: {:fun, 1}, default: &__MODULE__.render_cell/1],
+      sortable?: [
+        type: :boolean,
+        required: false,
+        default: true,
+        doc:
+          "Set to false to disable sorting. Note: If it it is not technically sortable, it will automatically be set to false."
+      ],
+      type: [
+        type: {:one_of, [:default]},
+        required: false,
+        doc: "The type of the the column.",
+        default: :default
+      ],
+      resource_field_type: [
+        type:
+          {:one_of,
+           [
+             :attribute,
+             :calculation,
+             :aggregate,
+             :has_one,
+             :belongs_to,
+             :has_many,
+             :many_to_many
+           ]},
+        private?: true
+      ]
+    ]
 
   def render_cell(%{col: %{name: name, type: :default}, row: row}) do
     Map.get(row, name)

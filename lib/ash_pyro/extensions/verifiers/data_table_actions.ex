@@ -1,7 +1,7 @@
-defmodule AshPyro.Extensions.Resource.Verifiers.DataTableActions do
+defmodule AshPyro.Extensions.Verifiers.DataTableActions do
   @moduledoc false
 
-  use AshPyro.Extensions.Resource.Verifiers
+  use AshPyro.Extensions.Verifiers
 
   alias Ash.Resource.Info
   alias AshPyro.Extensions.Dsl.DataTable

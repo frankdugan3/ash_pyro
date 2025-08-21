@@ -1,7 +1,7 @@
-defmodule AshPyro.Extensions.Resource.Transformers.MergeFormActions do
+defmodule AshPyro.Extensions.Transformers.MergeFormActions do
   @moduledoc false
 
-  use AshPyro.Extensions.Resource.Transformers
+  use AshPyro.Extensions.Transformers
 
   alias Ash.Resource.Dsl
   alias AshPyro.Extensions.Dsl.Form
