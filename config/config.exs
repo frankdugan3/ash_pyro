@@ -4,7 +4,7 @@ config :logger, level: :warning
 
 config :spark, :formatter,
   remove_parens?: true,
-  AshPyro: [
+  PyroManiac: [
     section_order: [
       :form,
       :data_table
@@ -32,7 +32,7 @@ if Mix.env() == :dev do
   config :git_ops,
     mix_project: Mix.Project.get!(),
     changelog_file: "CHANGELOG.md",
-    repository_url: "https://github.com/frankdugan3/ash_pyro",
+    repository_url: "https://github.com/frankdugan3/pyro_maniac",
     types: [
       # Makes an allowed commit type called `tidbit` that is not
       # shown in the changelog

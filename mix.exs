@@ -1,17 +1,17 @@
-defmodule AshPyro.MixProject do
+defmodule PyroManiac.MixProject do
   @moduledoc false
   use Mix.Project
 
-  alias AshPyro.Dsl
+  alias PyroManiac.Dsl
 
-  @source_url "https://github.com/frankdugan3/ash_pyro"
-  @version "0.2.1"
+  @source_url "https://github.com/frankdugan3/pyro_maniac"
+  @version "0.1.0"
   @description """
-  Declarative UI for Ash Framework.
+  Extensible, declarative UI for Ash Framework. Built-in support for Phoenix LiveView and Hologram.
   """
   def project do
     [
-      app: :ash_pyro,
+      app: :pyro_maniac,
       version: @version,
       description: @description,
       elixir: "~> 1.16",
@@ -20,12 +20,13 @@ defmodule AshPyro.MixProject do
       deps: deps(),
       docs: &docs/0,
       test_paths: ["test"],
-      name: "AshPyro",
+      name: "PyroManiac",
       source_url: @source_url,
       elixirc_paths: elixirc_paths(Mix.env()),
       consolidate_protocols: Mix.env() != :test,
       aliases: aliases(),
       compilers: [:yecc] ++ Mix.compilers(),
+      # compilers: [:yecc, :phoenix_live_view] ++ Mix.compilers() ++ [:hologram],
       dialyzer: [plt_add_apps: [:ash, :spark, :ecto, :mix]]
     ]
   end
@@ -45,11 +46,11 @@ defmodule AshPyro.MixProject do
     "documentation/**/*.md"
     |> Path.wildcard()
     |> Enum.map(fn
-      "documentation/dsls/DSL-AshPyro.md" = path ->
+      "documentation/dsls/DSL-PyroManiac.md" = path ->
         {String.to_atom(path),
          [
-           title: "AshPyro",
-           search_data: Spark.Docs.search_data_for(AshPyro.Dsl)
+           title: "PyroManiac",
+           search_data: Spark.Docs.search_data_for(PyroManiac.Dsl)
          ]}
 
       path ->
@@ -100,26 +101,26 @@ defmodule AshPyro.MixProject do
 
   defp package do
     [
-      name: :ash_pyro,
+      name: :pyro_maniac,
       maintainers: ["Frank Dugan III"],
       licenses: ["MIT"],
       links: %{GitHub: @source_url},
       files:
         ~w(lib documentation) ++
-          ~w(README* CHANGELOG* LICENSE* mix.exs .formatter.exs)
+          ~w(README* CHANGELOG* LICENSE* usage-rules.md mix.exs .formatter.exs)
     ]
   end
 
   defp groups_for_modules do
     [
       Core: [
-        AshPyro,
-        AshPyro.Enum,
-        AshPyro.Helpers,
-        AshPyro.Info
+        PyroManiac,
+        PyroManiac.Enum,
+        PyroManiac.Helpers,
+        PyroManiac.Info
       ],
       "DSL Structs": [
-        ~r/AshPyro.Dsl/
+        ~r/PyroManiac.Dsl/
       ]
     ]
   end
@@ -143,28 +144,29 @@ defmodule AshPyro.MixProject do
       {:mix_audit, ">= 0.0.0", only: :dev, runtime: false},
       {:mix_test_watch, "~> 1.0", only: [:dev, :test], runtime: false},
       {:quokka, "~> 2.10", only: [:dev, :test], runtime: false},
-      {:usage_rules, "~> 0.1", only: [:dev]},
       # Core dependencies
       {:ash, "~> 3.0"},
       {:igniter, "~> 0.6", optional: true},
-      {:spark, "~> 2.2.63"}
+      {:spark, "~> 2.2.63"},
+      # {:phoenix, "~> 1.8", optional: true},
+      {:phoenix_live_view, "~> 1.1", optional: true},
+      {:hologram, "~> 0.5", optional: true}
     ]
   end
 
   defp aliases do
     [
       docs: [
-        # "ash_pyro.install --scribe documentation/topics/advanced/manual-installation.md",
+        # "pyro_maniac.install --scribe documentation/topics/advanced/manual-installation.md",
         "spark.cheat_sheets",
         "docs",
         "spark.replace_doc_links"
       ],
-      rules: "usage_rules.sync CLAUDE.md --all --link-to-folder deps --link-style at --yes",
-      update: ["deps.update --all", "rules"],
+      update: ["deps.update --all"],
       format: ["format --migrate"],
-      "spark.cheat_sheets": "spark.cheat_sheets --extensions AshPyro.Dsl",
+      "spark.cheat_sheets": "spark.cheat_sheets --extensions PyroManiac.Dsl",
       "spark.formatter": [
-        "spark.formatter --extensions AshPyro.Dsl",
+        "spark.formatter --extensions PyroManiac.Dsl,PyroManiac.Theme.Dsl",
         "format"
       ],
       # until we hit 1.0, we will ensure no major release!

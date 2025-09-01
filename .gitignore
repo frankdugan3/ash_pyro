@@ -29,3 +29,4 @@ pyro-*.tar
 
 # Secret files
 *.env
+priv/static/hologram

@@ -1,6 +1,6 @@
 # Get Started
 
-This guide steps through the installation process for AshPyro.
+This guide steps through the installation process for PyroManiac.
 
 ## Installation
 
@@ -15,7 +15,7 @@ These steps assume you understand how to install and use Ash, and does not cover
    ```elixir
    def deps do
      [
-    {:ash_pyro, "~> 0.2.1"},
+    {:pyro_maniac, "~> 0.2.1"},
     {:ash, "~> 2.4"},
      ]
    end
@@ -25,7 +25,7 @@ These steps assume you understand how to install and use Ash, and does not cover
 
    ```elixir
    [
-     import_deps: [:ash_pyro, :ash],
+     import_deps: [:pyro_maniac, :ash],
      plugins: [Spark.Formatter]
    ]
    ```

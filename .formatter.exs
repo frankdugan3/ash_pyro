@@ -1,5 +1,6 @@
 # Used by "mix format"
 spark_locals_without_parens = [
+  __identifier__: 1,
   action: 1,
   action: 2,
   action_type: 1,
@@ -9,6 +10,8 @@ spark_locals_without_parens = [
   autocomplete_search_action: 1,
   autocomplete_search_arg: 1,
   autofocus: 1,
+  base_class: 2,
+  base_class: 3,
   cell_class: 1,
   class: 1,
   column: 1,
@@ -27,6 +30,8 @@ spark_locals_without_parens = [
   label: 1,
   options: 1,
   path: 1,
+  prefix: 1,
+  prefixed: 1,
   prompt: 1,
   render_cell_data: 1,
   sortable?: 1,
@@ -38,9 +43,9 @@ spark_locals_without_parens = [
 
 [
   quokka: [autosort: [:map, :defstruct, :schema]],
-  import_deps: [:ash],
+  import_deps: [:ash, :hologram],
   locals_without_parens: spark_locals_without_parens,
   export: [locals_without_parens: spark_locals_without_parens],
-  plugins: [Quokka, Spark.Formatter],
+  plugins: [Quokka, Phoenix.LiveView.HTMLFormatter, Spark.Formatter],
   inputs: ["*.{heex,ex,exs}", "{config,lib,test}/**/*.{heex,ex,exs}"]
 ]

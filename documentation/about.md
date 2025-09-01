@@ -16,17 +16,17 @@ Pyro is a suite of libraries for building UI in Phoenix.
   - Heex component library
   - Overrides presets to get started quickly while allowing deep customization
 
-- [AshPyro](https://hexdocs.pm/ash_pyro)
+- [PyroManiac](https://hexdocs.pm/pyro_maniac)
 
   Declarative UI for Ash Framework.
 
   - Ash extensions providing a declarative UI DSL
 
-- [AshPyroComponents](https://hexdocs.pm/ash_pyro_components)
+- [PyroManiacComponents](https://hexdocs.pm/pyro_maniac_components)
 
-  Components that automatically render PyroComponents declaratively via AshPyro.
+  Components that automatically render PyroComponents declaratively via PyroManiac.
 
-To install AshPyro and add declarative UI DSL to your Ash project, follow the [Get Started](get-started.html) guide. For the other features, please see the "Get Started" guide for the appropriate library instead.
+To install PyroManiac and add declarative UI DSL to your Ash project, follow the [Get Started](get-started.html) guide. For the other features, please see the "Get Started" guide for the appropriate library instead.
 
 ## What "problem" is it solving?
 
