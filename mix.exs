@@ -2,7 +2,7 @@ defmodule AshPyro.MixProject do
   @moduledoc false
   use Mix.Project
 
-  alias AshPyro.Extensions.Dsl
+  alias AshPyro.Dsl
 
   @source_url "https://github.com/frankdugan3/ash_pyro"
   @version "0.2.1"
@@ -18,7 +18,7 @@ defmodule AshPyro.MixProject do
       start_permanent: Mix.env() == :prod,
       package: package(),
       deps: deps(),
-      docs: docs(),
+      docs: &docs/0,
       test_paths: ["test"],
       name: "AshPyro",
       source_url: @source_url,
@@ -44,18 +44,26 @@ defmodule AshPyro.MixProject do
   defp extras do
     "documentation/**/*.md"
     |> Path.wildcard()
-    |> Enum.map(fn path ->
-      title =
-        path
-        |> Path.basename(".md")
-        |> String.split(~r/[-_]/)
-        |> Enum.map_join(" ", &String.capitalize/1)
+    |> Enum.map(fn
+      "documentation/dsls/DSL-AshPyro.md" = path ->
+        {String.to_atom(path),
+         [
+           title: "AshPyro",
+           search_data: Spark.Docs.search_data_for(AshPyro.Dsl)
+         ]}
 
-      {String.to_atom(path),
-       [
-         title: title,
-         default: title == "Get Started"
-       ]}
+      path ->
+        title =
+          path
+          |> Path.basename(".md")
+          |> String.split(~r/[-_]/)
+          |> Enum.map_join(" ", &String.capitalize/1)
+
+        {String.to_atom(path),
+         [
+           title: title,
+           default: title == "Get Started"
+         ]}
     end)
   end
 
@@ -64,6 +72,9 @@ defmodule AshPyro.MixProject do
       Tutorials: [
         "documentation/tutorials/get-started.md",
         ~r'documentation/tutorials'
+      ],
+      DSL: [
+        ~r'documentation/dsls'
       ]
     ]
   end
@@ -107,11 +118,8 @@ defmodule AshPyro.MixProject do
         AshPyro.Helpers,
         AshPyro.Info
       ],
-      Extensions: [
-        ~r/AshPyro.Extensions.Resource/
-      ],
-      "DSL Schema": [
-        ~r/AshPyro.Extensions.Dsl/
+      "DSL Structs": [
+        ~r/AshPyro.Dsl/
       ]
     ]
   end
@@ -145,16 +153,23 @@ defmodule AshPyro.MixProject do
 
   defp aliases do
     [
+      docs: [
+        # "ash_pyro.install --scribe documentation/topics/advanced/manual-installation.md",
+        "spark.cheat_sheets",
+        "docs",
+        "spark.replace_doc_links"
+      ],
       rules: "usage_rules.sync CLAUDE.md --all --link-to-folder deps --link-style at --yes",
       update: ["deps.update --all", "rules"],
       format: ["format --migrate"],
-      build: [
-        "spark.formatter --extensions AshPyro.Extensions.Resource",
+      "spark.cheat_sheets": "spark.cheat_sheets --extensions AshPyro.Dsl",
+      "spark.formatter": [
+        "spark.formatter --extensions AshPyro.Dsl",
         "format"
       ],
       # until we hit 1.0, we will ensure no major release!
       release: [
-        "build",
+        "spark.formatter",
         "git_ops.release --no-major"
       ],
       publish: [

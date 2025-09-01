@@ -4,7 +4,6 @@ defmodule AshPyro.InfoTest do
 
   alias Ash.DataLayer.Ets
   alias Ash.Notifier.PubSub
-  alias AshPyro.Extensions.Resource
 
   require Ash.Query
 
@@ -14,79 +13,12 @@ defmodule AshPyro.InfoTest do
     @moduledoc false
     use Ash.Resource,
       data_layer: Ets,
-      extensions: [Resource],
       notifiers: [PubSub],
       domain: AshPyro.InfoTest.Domain
 
     alias AshPyro.InfoTest.Domain
 
     require Ash.Query
-
-    pyro do
-      data_table do
-        live_view do
-          page "/users", :companies do
-            list "/", :index, :read
-          end
-        end
-
-        action_type [:read] do
-          exclude [:id, :name_email, :best_friend]
-          column :name
-          column :email
-          column :role
-          column :active
-          column :notes
-        end
-      end
-
-      form do
-        action_type [:create, :update] do
-          class "max-w-md justify-self-center"
-
-          field_group :primary do
-            label "Primary Info"
-            class "md:grid-cols-2"
-
-            field :name do
-              description "Your full real name"
-              autofocus true
-            end
-
-            field :email
-          end
-
-          field_group :authorization do
-            label "Authorization"
-            class "md:grid-cols-2"
-
-            field :role do
-              label "Role"
-            end
-
-            field :active do
-              label "Active"
-            end
-          end
-
-          field_group :friendships do
-            label "Friendships"
-
-            field :best_friend_id do
-              label "Best Friend"
-              type :autocomplete
-              prompt "Search friends for your bestie"
-              autocomplete_option_label_key :name_email
-            end
-          end
-
-          field :notes do
-            type :long_text
-            input_class "min-h-[10rem]"
-          end
-        end
-      end
-    end
 
     attributes do
       uuid_primary_key :id
@@ -183,6 +115,67 @@ defmodule AshPyro.InfoTest do
 
     resources do
       resource User
+    end
+  end
+
+  defmodule UserPage do
+    @moduledoc false
+
+    use AshPyro, resource: AshPyro.InfoTest.User
+
+    data_table do
+      action_type [:read] do
+        default_sort "email"
+        exclude [:id, :name_email, :best_friend]
+        column :name
+        column :email
+        column :role
+        column :active
+        column :notes
+      end
+    end
+
+    form do
+      action_type [:create, :update] do
+        class "max-w-md justify-self-center"
+
+        field_group "Primary Info" do
+          class "md:grid-cols-2"
+
+          field :name do
+            description "Your full real name"
+            autofocus true
+          end
+
+          field :email
+        end
+
+        field_group "Authorization" do
+          class "md:grid-cols-2"
+
+          field :role do
+            label "Role"
+          end
+
+          field :active do
+            label "Active"
+          end
+        end
+
+        field_group "Friendships" do
+          field :best_friend_id do
+            label "Best Friend"
+            type :autocomplete
+            prompt "Search friends for your bestie"
+            autocomplete_option_label_key :name_email
+          end
+        end
+
+        field :notes do
+          type :long_text
+          input_class "min-h-[10rem]"
+        end
+      end
     end
   end
 end

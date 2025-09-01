@@ -4,10 +4,15 @@ config :logger, level: :warning
 
 config :spark, :formatter,
   remove_parens?: true,
+  AshPyro: [
+    section_order: [
+      :form,
+      :data_table
+    ]
+  ],
   "Ash.Resource": [
     section_order: [
       :resource,
-      :pyro,
       :authentication,
       :pub_sub,
       :attributes,
