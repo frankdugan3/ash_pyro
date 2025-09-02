@@ -12,7 +12,14 @@ defmodule PyroManiac.Theme.BaseClass do
       name: [
         doc: "UI component for class",
         required: true,
-        type: {:one_of, [:data_table, :form]}
+        type: {
+          :one_of,
+          # quokka:sort
+          [
+            :data_table,
+            :form
+          ]
+        }
       ],
       prefixed: [type: :string, private?: true],
       value: [

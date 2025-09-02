@@ -1,6 +1,6 @@
 defmodule PyroManiac.Theme.DaisyUI do
   @moduledoc """
-  A PyroManiac theme implementation for DaisyUI
+  A PyroManiac theme implementation for DaisyUI.
   """
 
   use PyroManiac.Theme
